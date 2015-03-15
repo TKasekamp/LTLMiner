@@ -1,0 +1,13 @@
+##### GENERAL FILETYPES #####
+
+# Java class files
+*.class
+
+# Log Files
+*.log
+
+target/
+
+.settings/
+.project
+.classpath

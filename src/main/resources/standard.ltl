@@ -1,0 +1,805 @@
+#################################################
+# version	         : 0.3
+# date			 : 08122004
+# author		 : HT de Beer
+##
+
+## 
+# Start with defining the 'standard' attributes, as specified in the xml
+# specification of the workflow logs for the ProM framework.
+##
+
+set ate.EventType;
+set ate.Originator;
+date ate.Timestamp := "yyyy-MM-dd"; 
+# The format you should supply date literals to the attribute ate.Timestamp or
+# renamings of that attribute is a four digit year, a dash a two digit month,
+# again a dash and a two digit day. For example 2004-12-08, denoting December
+# the 8th of 2004.
+set ate.WorkflowModelElement;
+
+number pi.numSimilarInstances;
+
+##
+# Some 'standard' renamings. First some names of the attributes without the
+# ate. and without capitals. Then some renamings which can be used more
+# often. You can add easily your own renamings, as long you remember that
+# every name must be unique.
+##
+
+rename ate.EventType as eventtype;
+rename ate.EventType as event;
+rename ate.Originator as originator;
+rename ate.Originator as person;
+rename ate.Timestamp as timestamp;
+rename ate.Timestamp as time;
+rename ate.WorkflowModelElement as modelelement;
+rename ate.WorkflowModelElement as activity;
+rename ate.WorkflowModelElement as place;
+rename ate.WorkflowModelElement as element;
+rename pi.numSimilarInstances as freq;
+
+formula at_least_num_similar_instances( N: freq ) :=
+{
+    <h2>Does the PI have at least N similar instances?</h2>
+    <p>This applies only to grouped logs, which have the numSimilarInstances data attribute.</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>N</b> of type number</li>
+    </ul>
+    </p>
+}
+  freq >= N;
+
+##
+# Some standard and usefull subformulae
+##
+
+##
+# last is a formula to point to the last state. The last state is that state in
+# which in the next state a comparison of two equal attributes is not true.
+# With end you can specify properties about the last state.
+subformula last( ) :=
+{}
+  !( _O (  activity == activity ) );
+
+# To specify properties about the second last state.
+subformula second_last() := {}
+  _O( last() );
+
+# To specify properties about the thirs last state.
+subformula third_last() := {}
+  _O( second_last() );
+
+##
+
+##
+# simple formulae about activities.
+
+formula is_activity_of_first_state_A( A: activity ) :=
+{
+    <h2>Is the activity of the first state equal to <b>A</b>?</h2>
+    <p> Compare the activity of the first state with <b>A</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}
+  activity == A;
+
+formula is_activity_of_second_state_A( A: activity ) :=
+{
+    <h2>Is the activity of the second state equal to <b>A</b>?</h2>
+    <p> Compare the activity of the second state with <b>A</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}
+  _O( activity == A );
+
+formula is_activity_of_third_state_A( A: activity ) :=
+{
+    <h2>Is the activity of the third state equal to <b>A</b>?</h2>
+    <p> Compare the activity of the third state with <b>A</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}
+  _O( _O( activity == A ) );
+
+formula is_activity_of_last_state_A( A: activity ) :=
+{
+    <h2>Is the activity of the last state equal to <b>A</b>?</h2>
+    <p> Compare the activity of the last state with <b>A</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}
+  <>( ( activity == A /\ last() ) );
+
+formula is_activity_of_second_last_state_A( A: activity ) :=
+{
+    <h2>Is the activity of the second last state equal to <b>A</b>?</h2>
+    <p> Compare the activity of the second last state with <b>A</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}
+  <>( ( activity == A /\ second_last() ) );
+
+formula is_activity_of_third_last_state_A( A: activity ) :=
+{
+    <h2>Is the activity of the third last state equal to <b>A</b>?</h2>
+    <p> Compare the activity of the third last state with <b>A</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}
+  <>( ( activity == A /\ third_last() ) );
+  
+formula eventually_activity_A( A: activity ) := 
+{
+    <h2>Does activity <b>A</b> occur?</h2>
+    <p> Compute if there is an activity with name A </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}   
+    <>( activity == A );
+
+formula eventually_activity_A_and_eventually_B( A: activity, B: activity ) :=
+{
+    <h2>Does activity B occur and A too?</h2>
+    <p> Compute if there is an activity with name A and there
+    is an activity with name B</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+	<li><b>B</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}   
+  ( eventually_activity_A( A ) /\ eventually_activity_A( B ) ); 
+
+formula eventually_activity_A_or_eventually_B( A: activity, B: activity ) :=
+{
+    <h2>Does activity B occur or A?</h2>
+    <p> Compute if there is an activity with name A or there
+    is an activity with name B</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+	<li><b>B</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}   
+  ( eventually_activity_A( A ) \/ eventually_activity_A( B ) ); 
+
+formula eventually_activity_A_then_B( A: activity, B: activity ) := 
+{
+    <h2>Does activity B occur after activity A occur?</h2>
+    <p> Compute if there is an activity with name A and then, eventually there
+    is an activity with name B</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+	<li><b>B</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}   
+    <>( ( activity == A /\ <>( activity == B ) ) );
+
+formula eventually_activity_A_next_B( A: activity, B: activity ) := 
+{
+    <h2>Does activity B occur after activity A occur?</h2>
+    <p> Compute if there is an activity with name A and then, the next time there
+    is an activity with name B</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+	<li><b>B</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}   
+    <>( ( activity == A /\ _O( activity == B ) ) );
+
+formula eventually_activity_A_then_B_then_C( A: activity, B: activity, C: activity ) := 
+{
+    <h2>Does activity C occur after activity B occur after activity A occur?</h2>
+    <p> Compute if there is an activity with name A and then, eventually there
+    is an activity with name B, followed by eventually an activity with name C</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+	<li><b>B</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+	<li><b>C</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}   
+    <>( ( activity == A /\ <>( ( activity == B /\ <>( activity == C ) ) ) ) );
+
+formula eventually_activity_A_next_B_next_C( A: activity, B: activity, C: activity ) := 
+{
+    <h2>Does activity C occur after activity B occur after activity A occur?</h2>
+    <p> Compute if there is an activity with name A and then, the next time there
+    is an activity with name B, followed by an activity with name C</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+	<li><b>B</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+	<li><b>C</b> of type set (<i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}   
+    <>( ( activity == A /\ _O( ( activity == B /\ _O( activity == C ) ) ) ) );
+
+# end of simple formulae about activities
+## 
+
+##
+# simple formulae about persons.
+
+formula does_person_P_the_first_state( P: person ) :=
+{
+    <h2>Is the activity of the first state done by person <b>P</b>?</h2>
+    <p> Check if the person of the first state equals <b>P</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}
+  person == P;
+
+formula does_person_P_the_second_state( P: person ) :=
+{
+    <h2>Is the activity of the second state done by person <b>P</b>?</h2>
+    <p> Check if the person of the second state equals <b>P</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}
+  _O( person == P );
+
+formula does_person_P_the_third_state( P: person ) :=
+{
+    <h2>Is the activity of the third state done by person <b>P</b>?</h2>
+    <p> Check if the person of the third state equals <b>P</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}
+  _O( _O( person == P ) );
+
+formula does_person_P_the_last_state( P: person ) :=
+{
+    <h2>Is the activity of the last state done by person <b>P</b>?</h2>
+    <p> Compare the person of the last state with <b>P</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}
+  <>( ( person == P /\ last() ) );
+
+formula does_person_P_the_second_last_state( P: person ) :=
+{
+    <h2>Is the activity of the second last state done by person <b>P</b>?</h2>
+    <p> Compare the person of the second last state with <b>P</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}
+  <>( ( person == P /\ second_last() ) );
+
+formula does_person_P_the_third_last_state( P: person ) :=
+{
+    <h2>Is the activity of the third last state done by person <b>P</b>?</h2>
+    <p> Compare the person of the third last state with <b>P</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}
+  <>( ( person == P /\ third_last() ) );
+  
+formula eventually_person_P( P: person ) := 
+{
+    <h2>Does person <b>P</b> something?</h2>
+    <p> Compute if person <b>P</b> is the originator of a state</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}   
+    <>( person == P );
+
+formula eventually_person_P_and_eventually_person_Q( P: person, Q: person ) :=
+{
+    <h2>Does person P and Q eventually something?</h2>
+    <p> Compute if there is a person with name P and there
+    is a person with name Q</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+	<li><b>Q</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}   
+  ( eventually_person_P( P ) /\ eventually_person_P( Q ) ); 
+
+formula eventually_person_P_or_eventually_person_Q( P: person, Q: person ) :=
+{
+    <h2>Does person P or Q eventually something?</h2>
+    <p> Compute if there is a person with name P or there
+    is a person with name Q</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+	<li><b>Q</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}   
+  ( eventually_person_P( P ) \/ eventually_person_P( Q ) ); 
+
+formula eventually_person_P_then_Q( P: person, Q: person ) := 
+{
+    <h2>Does person Q occur after person P occur?</h2>
+    <p> Compute if there is a person with name P and then, eventually there
+    is a person with name Q</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+	<li><b>Q</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}   
+    <>( ( person == P /\ <>( person == Q ) ) );
+
+formula eventually_person_P_next_Q( P: person, Q: person ) := 
+{
+    <h2>Does person Q occur after person P occur?</h2>
+    <p> Compute if there is a person with name P and then, the next time there
+    is a person with name Q</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+	<li><b>Q</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}   
+    <>( ( person == P /\ _O( person == Q ) ) );
+
+formula eventually_person_P_then_Q_then_R( P: person, Q: person, R: person ) := 
+{
+    <h2>Does person R occur after person Q occur after person P occur?</h2>
+    <p> Compute if there is a person with name P and then, eventually there
+    is a person with name Q, followed by eventually a person with name R</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+	<li><b>Q</b> of type set (<i>ate.Originator</i>)</li>
+	<li><b>R</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}   
+    <>( ( person == P /\ <>( ( person == Q /\ <>( person == R ) ) ) ) );
+
+formula eventually_person_P_next_Q_next_R( P: person, Q: person, R: person ) := 
+{
+    <h2>Does person R occur after person Q occur after person P occur?</h2>
+    <p> Compute if there is a person with name P and then, the next time there
+    is a person with name Q, followed by a person with name R</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set (<i>ate.Originator</i>)</li>
+	<li><b>Q</b> of type set (<i>ate.Originator</i>)</li>
+	<li><b>R</b> of type set (<i>ate.Originator</i>)</li>
+    </ul>
+    </p>
+}   
+    <>( ( person == P /\ _O( ( person == Q /\ _O( person == R ) ) ) ) );
+
+# end of simple formulae about persons
+## 
+
+##
+# Simple formulae about times
+
+formula eventually_before_time_T( T: time ) := 
+{
+    <h2>Eventually a state before or equal time <b>T</b></h2>
+    <p>Compute if there is a state which have a time stamp before <b>T</b></p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>T</b> of type date (<i>ate.Timestamp</i>) with date pattern
+	<i>yyyy-MM-dd</i>.</li>
+    </ul></p>
+}
+  <>( time <= T );
+
+formula eventually_after_time_T( T: time ) := 
+{
+    <h2>Eventually a state after or equal time <b>T</b></h2>
+    <p>Compute if there is a state which have a time stamp after <b>T</b></p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>T</b> of type date (<i>ate.Timestamp</i>) with date pattern
+	<i>yyyy-MM-dd</i>.</li>
+    </ul></p>
+}
+  <>( time >= T );
+
+formula always_between_time_T_and_U( T: time, U: time ) := 
+{
+    <h2>Always the timestamp is between T and U</h2>
+    <p>Compute if in all states the time stap is after <b>T</b> and before
+    <b>U</b></p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>T</b> of type date (<i>ate.Timestamp</i>) with date pattern
+	<i>yyyy-MM-dd</i>.</li>
+	<li><b>U</b> of type date (<i>ate.Timestamp</i>) with date pattern
+	<i>yyyy-MM-dd</i>.</li>
+    </ul></p>
+}
+  []( ( time >= T /\ time <= U ) );
+    
+# end of simple formula about times
+## 
+
+##
+# simple formulae about event types
+
+formula first_state_event_E( E: event ) := 
+{
+    <h2>Is the event of the first state <b>E</b>?</h2>
+    <p> Check if the event of the first state equals <b>E</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>E</b> of type set (<i>ate.EventType</i>)</li>
+    </ul>
+    </p>
+    
+}
+  event == E;
+
+formula last_state_event_E( E: event ) := 
+{
+    <h2>Is the event of the last state <b>E</b>?</h2>
+    <p> Check if the event of the last state equals <b>E</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>E</b> of type set (<i>ate.EventType</i>)</li>
+    </ul>
+    </p>
+    
+}
+  <>( ( event == E /\ last() ) );
+
+formula second_state_event_E( E: event ) := 
+{
+    <h2>Is the event of the second state <b>E</b>?</h2>
+    <p> Check if the event of the second state equals <b>E</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>E</b> of type set (<i>ate.EventType</i>)</li>
+    </ul>
+    </p>
+    
+}
+  _O( event == E );
+
+formula second_last_state_event_E( E: event ) := 
+{
+    <h2>Is the event of the second last state <b>E</b>?</h2>
+    <p> Check if the event of the second last state equals <b>E</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>E</b> of type set (<i>ate.EventType</i>)</li>
+    </ul>
+    </p>
+    
+}
+  ( event == E /\ second_last() );
+
+formula third_state_event_E( E: event ) := 
+{
+    <h2>Is the event of the third state <b>E</b>?</h2>
+    <p> Check if the event of the third state equals <b>E</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>E</b> of type set (<i>ate.EventType</i>)</li>
+    </ul>
+    </p>
+    
+}
+  _O( event == E );
+
+formula third_last_state_event_E( E: event ) := 
+{
+ <h2>Is the event of the third last state <b>E</b>?</h2>
+    <p> Check if the event of the third last state equals <b>E</b> </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>E</b> of type set (<i>ate.EventType</i>)</li>
+    </ul>
+    </p>
+    
+}
+  ( event == E /\ third_last() );
+
+formula eventually_event_E( E: event ) := 
+{
+ <h2>Does the event E eventually occur?</h2>
+    <p> Check if event E does eventually occur </p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>E</b> of type set (<i>ate.EventType</i>)</li>
+    </ul>
+    </p>
+    
+}
+  <>( event == E );
+
+formula eventually_event_E_and_F( E: event, F: event ) := 
+{
+ <h2>Does the event E eventually occur and F too?</h2>
+    <p> Check if event E does eventually occur and F too?</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>E</b> of type set (<i>ate.EventType</i>)</li>
+	<li><b>F</b> of type set (<i>ate.EventType</i>)</li>
+    </ul>
+    </p>
+    
+}
+  ( <>( event == E ) /\ <>( event == F) );
+
+formula eventually_event_E_or_F( E: event, F: event ) := 
+{
+ <h2>Does the event E eventually occur or F?</h2>
+    <p> Check if event E does eventually occur or F?</p>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>E</b> of type set (<i>ate.EventType</i>)</li>
+	<li><b>F</b> of type set (<i>ate.EventType</i>)</li>
+    </ul>
+    </p>
+    
+}
+  ( <>( event == E ) \/ <>( event == F) );
+
+formula forall_activities_always_event_E_implies_eventually_event_F( 
+				    E: event, F: event) := 
+{
+ <h2>Hold for all activities that if event E occurs, then eventually event F
+ occurs too</h2>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>E</b> of type set (<i>ate.EventType</i>)</li>
+	<li><b>F</b> of type set (<i>ate.EventType</i>)</li>
+    </ul>
+    </p>
+}
+  forall[ a: activity |
+     []( # []
+         ( # \/ 
+	   ( # -> 
+		 ( activity == a /\ event == E ) 
+		     -> 
+		 <>( ( activity == a /\ event == F ) )
+	   ) # ->
+	       \/
+	   last() # for finalisation.
+         ) # \/ 
+       ) # []
+  ];
+
+formula forall_activities_and_persons_always_event_E_implies_eventually_event_F( 
+				    E: event, F: event) := 
+{
+ <h2>Hold for all activities and persons that if event E occurs, then eventually event F
+ occurs too</h2>
+    <p> Arguments:<br>
+    <ul>
+	<li><b>E</b> of type set (<i>ate.EventType</i>)</li>
+	<li><b>F</b> of type set (<i>ate.EventType</i>)</li>
+    </ul>
+    </p>
+}
+forall[ p: person |
+  forall[ a: activity |
+     []( # []
+         ( # \/ 
+	   ( # -> 
+		 ( activity == a /\ ( event == E /\ person == p) ) 
+		     -> 
+		 <>( ( activity == a /\ ( event == F /\ person == p ) ) )
+	   ) # ->
+	       \/
+	   last()
+         ) # \/ 
+       ) # []
+  ]
+];
+
+# end of simple formulae about event types
+##
+
+##
+# Combined properties
+
+subformula P_does_A( P: person, A: activity ) := {}    
+    ( person == P /\ activity == A);
+
+formula activity_A_is_done_by_person_P_and_Q( 
+			    A: activity, P: person, Q: person ) :=
+{
+    <h2>Is activity A done by person P and by person Q?</h2>
+    <p>Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set ( <i>ate.Originator</i>)</li>
+	<li><b>Q</b> of type set ( <i>ate.Originator</i>)</li>
+	<li><b>A</b> of type set ( <i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}
+ ( <>( P_does_A( P, A ) ) /\ <>( P_does_A( Q, A ) ) );
+
+formula person_P_does_activity_A( P: person, A: activity ) := 
+{
+    <h2>Does person P activity of activity A?</h2>
+    <p>Compute if person P does activity A</p>
+    <p>Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set ( <i>ate.Originator</i>)</li>
+	<li><b>A</b> of type set ( <i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}
+    <>( P_does_A( P, A ) );
+
+formula person_P_does_activity_A_and_B( P: person, A: activity, B: activity ) :=
+{
+    <h2>Does person P activity of activity A and of B?</h2>
+    <p>Compute if person P does activity A and B</p>
+    <p>Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set ( <i>ate.Originator</i>)</li>
+	<li><b>A</b> of type set ( <i>ate.WorkflowModelElement</i>)</li>
+	<li><b>B</b> of type set ( <i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}
+    ( person_P_does_activity_A( P, A ) /\ person_P_does_activity_A( P, B ) );
+
+formula person_P_does_activity_A_and_then_B( P: person, A: activity, B: activity ) :=
+{
+    <h2>Does person P activity of activity A and then B?</h2>
+    <p>Compute if person P does activity A and then B</p>
+    <p>Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set ( <i>ate.Originator</i>)</li>
+	<li><b>A</b> of type set ( <i>ate.WorkflowModelElement</i>)</li>
+	<li><b>B</b> of type set ( <i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}
+    <> ( ( P_does_A( P, A )  /\ _O( P_does_A( P, B ) ) ) );
+
+formula person_P_does_activity_A_and_then_eventually_B( P: person, A: activity, B: activity ) :=
+{
+    <h2>Does person P activity of activity A and then sometime B?</h2>
+    <p>Compute if person P does activity A and then sometime B</p>
+    <p>Arguments:<br>
+    <ul>
+	<li><b>P</b> of type set ( <i>ate.Originator</i>)</li>
+	<li><b>A</b> of type set ( <i>ate.WorkflowModelElement</i>)</li>
+	<li><b>B</b> of type set ( <i>ate.WorkflowModelElement</i>)</li>
+    </ul>
+    </p>
+}
+    <>( ( P_does_A( P, A ) /\ <>( P_does_A( P, B ) ) ) );
+
+
+formula exists_activity_done_two_times() := 
+{ 
+    <h2>Does an activity exists which is done two times after each other?</h2>
+    <p> Is there an activity which is done, and in the next activity too?</p>
+}
+    exists[ s: activity |
+	eventually_activity_A_then_B( s, s ) ];
+
+formula exists_person_doing_task_A_and_B( A: activity, B: activity ) :=
+{
+    <h2>Is there a person doing task A and B?</h2>
+    <p><ul>
+    <li><b>A</b> of type set ( <i>ate.WorkflowModelElement</i>)</li>
+    <li><b>B</b> of type set ( <i>ate.WorkflowModelElement</i>)</li>
+    </ul></p>
+}
+    exists[ p: person |
+	( person_P_does_activity_A( p, A ) /\ person_P_does_activity_A( p, B ) ) ];
+
+subformula not_eq( A: activity, B: activity ) := {}
+    ! ( ( activity == A /\ activity == B ) );
+
+subformula P_does_A-A_not_B( P: person, A: activity, B: activity ) :=
+{}
+<>( ( activity == A /\ ( activity != B /\ person == P ) ) );
+
+subformula A_done_by_P-P_not_Q( A: activity, P: person, Q: person ) := 
+{}
+<>( ( person == P /\ ( person != Q /\ activity == A ) ) );
+
+formula exists_person_doing_two_different_activities() :=
+{
+    <h2>Is there a person doing two different activities?</h2>
+}
+    exists[ p: person |
+	exists[ s: activity |
+	    exists[ t: activity |
+		(  P_does_A-A_not_B( p, s, t) /\ P_does_A-A_not_B( p, t, s)) ] ] ];
+
+formula exists_activity_A_done_by_two_different_persons( A: activity ) :=
+{
+    <h2>Is there an activity done by two different persons?</h2>
+}
+	exists[ p: person |
+	    exists[ q: person |
+	      ( 
+		A_done_by_P-P_not_Q( A, p, q ) /\ A_done_by_P-P_not_Q( A, q, p)
+	      )
+	    ]
+    ];
+
+formula exists_activity_done_by_two_different_persons() :=
+{
+    <h2>Is there an activity done by two different persons?</h2>
+}
+    exists[ a: activity |
+	exists[ p: person |
+	    exists[ q: person |
+	      ( 
+		A_done_by_P-P_not_Q( a, p, q ) /\ A_done_by_P-P_not_Q( a, q, p)
+	      )
+	    ]
+	]
+    ];
+
+formula always_when_A_then_eventually_B( A: activity, B: activity ) := 
+{ 
+<h2>If activity A occurs, does activity B occur after activity A occured?</h2> 
+<p> Compute if always when there is an activity with name A and then, eventually there 
+is an activity with name B</p> 
+<p> Arguments:<br> 
+<ul> 
+<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li> 
+<li><b>B</b> of type set (<i>ate.WorkflowModelElement</i>)</li> 
+</ul> 
+</p> 
+} 
+[]( (  activity == A  -> <>( activity == B ) ) ); 
