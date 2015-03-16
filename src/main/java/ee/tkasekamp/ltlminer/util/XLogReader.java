@@ -1,4 +1,4 @@
-package ee.tkasekamp.ltlminer;
+package ee.tkasekamp.ltlminer.util;
 
 import java.io.File;
 

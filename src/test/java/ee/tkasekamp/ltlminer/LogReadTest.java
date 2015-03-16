@@ -21,6 +21,8 @@ import org.processmining.plugins.ltlchecker.InstanceModel;
 import org.processmining.plugins.ltlchecker.LTLChecker;
 import org.processmining.plugins.ltlchecker.model.LTLModel;
 
+import ee.tkasekamp.ltlminer.util.XLogReader;
+
 /**
  * Read in log and try to find all the names of the rules. Just experimentation.
  * 
@@ -105,7 +107,8 @@ public class LogReadTest {
 			}
 		}
 		System.out.println(output.getInstances());
-		// System.out.println(output.getRules()[0].toString());
+		 System.out.println(output.getRules()[0].getRuleName());
+		 System.out.println(output.getRules()[0].getLtlRule());
 
 		// System.out.println(output.getInstances()[0].getInstance());
 		XLog comLog = (XLog) objList[1];
