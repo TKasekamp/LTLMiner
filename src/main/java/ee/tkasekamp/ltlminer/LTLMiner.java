@@ -10,7 +10,7 @@ import org.deckfour.xes.model.XTrace;
 public class LTLMiner {
 
 	/**
-	 * Finds all activities in this log.
+	 * Finds all activities in the input log.
 	 * 
 	 * @param log
 	 * @return
