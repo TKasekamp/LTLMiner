@@ -5,6 +5,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CombinationCreator {
+	private Pattern pattern;
+
+	public CombinationCreator() {
+		pattern = Pattern.compile("\\w(\\s)*(:)(\\s)*(activity)");
+	}
 
 	public ArrayList<String> createCombinations(String rule,
 			ArrayList<String> activities) {
@@ -55,8 +60,7 @@ public class CombinationCreator {
 		}
 	}
 
-	private int numberOfArguments(String rule) {
-		Pattern pattern = Pattern.compile("\\w(:)\\s(activity)");
+	public int numberOfArguments(String rule) {
 		Matcher matcher = pattern.matcher(rule);
 
 		int count = 0;
@@ -75,8 +79,7 @@ public class CombinationCreator {
 	 * @return
 	 */
 	private String replaceText(String rule, String[] combination) {
-		Pattern patt = Pattern.compile("\\w(:)\\s(activity)");
-		Matcher m = patt.matcher(rule);
+		Matcher m = pattern.matcher(rule);
 		StringBuffer sb = new StringBuffer(rule.length());
 
 		int counter = 0;

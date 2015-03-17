@@ -47,7 +47,18 @@ public class CombinationCreatorTest {
 
 	@Test
 	public void whiteSpaceTest() {
-		// tests for all combinations of whitespace. the regex must handle that.
+
+		String rule1 = "sads( A : activity ) = {} ...";
+		String rule2 = "sads( A: activity ) = {} ...";
+		String rule3 = "sads( A :activity ) = {} ...";
+		String rule4 = "sads( A:activity ) = {} ...";
+		String rule5 = "sads( A    :    activity ) = {} ...";
+
+		assertEquals(1, comboCreator.numberOfArguments(rule1));
+		assertEquals(1, comboCreator.numberOfArguments(rule2));
+		assertEquals(1, comboCreator.numberOfArguments(rule3));
+		assertEquals(1, comboCreator.numberOfArguments(rule4));
+		assertEquals(1, comboCreator.numberOfArguments(rule5));
 	}
 
 	@Test
