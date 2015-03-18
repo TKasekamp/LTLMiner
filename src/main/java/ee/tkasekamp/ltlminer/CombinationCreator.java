@@ -5,16 +5,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CombinationCreator {
-	private Pattern pattern;
+	private Pattern argumentPattern;
+	private Pattern ruleNamePattern;
 
 	public CombinationCreator() {
-		pattern = Pattern.compile("\\w(\\s)*(:)(\\s)*(activity)");
+		argumentPattern = Pattern.compile("\\w(\\s)*(:)(\\s)*(activity)");
+		ruleNamePattern = Pattern.compile("(formula)(\\s)*(\\w)+(\\()");
 	}
 
-	public ArrayList<String> createCombinations(String rule,
-			ArrayList<String> activities) {
-
-		ArrayList<String> rules = new ArrayList<>();
+	public String[] createCombinations(String rule, ArrayList<String> activities) {
 
 		ArrayList<String[]> combos = new ArrayList<>();
 		int k = numberOfArguments(rule);
@@ -22,10 +21,15 @@ public class CombinationCreator {
 		String[] branch = new String[k];
 		combine(input, k, branch, 0, combos);
 
+		String[] rules = new String[combos.size()];
 		// Actually combine stuff
-		for (String[] strings : combos) {
-			rules.add(replaceText(rule, strings));
+
+		for (int i = 0; i < combos.size(); i++) {
+			rules[i] = replaceText(rule, combos.get(i));
 		}
+
+		// Rename rules
+		rules = renameRules(rules);
 
 		return rules;
 	}
@@ -61,12 +65,26 @@ public class CombinationCreator {
 	}
 
 	public int numberOfArguments(String rule) {
-		Matcher matcher = pattern.matcher(rule);
+		Matcher matcher = argumentPattern.matcher(rule);
 
 		int count = 0;
 		while (matcher.find())
 			count++;
 		return count;
+	}
+
+	public String[] renameRules(String[] rules) {
+		Matcher matcher;
+
+		for (int i = 0; i < rules.length; i++) {
+			matcher = ruleNamePattern.matcher(rules[i]);
+			rules[i] = matcher.replaceAll("formula " + ruleName(i) + "(");
+		}
+		return rules;
+	}
+
+	private static String ruleName(int i) {
+		return "rule_" + i;
 	}
 
 	/**
@@ -79,7 +97,7 @@ public class CombinationCreator {
 	 * @return
 	 */
 	private String replaceText(String rule, String[] combination) {
-		Matcher m = pattern.matcher(rule);
+		Matcher m = argumentPattern.matcher(rule);
 		StringBuffer sb = new StringBuffer(rule.length());
 
 		int counter = 0;

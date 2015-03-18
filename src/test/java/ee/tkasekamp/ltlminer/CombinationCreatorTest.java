@@ -20,10 +20,10 @@ public class CombinationCreatorTest {
 		ArrayList<String> activities = new ArrayList<>();
 		activities.add("Skyrim");
 		String rule = "formula one( A: activity) = {} \n" + "<>( event == A );";
-		ArrayList<String> combos = comboCreator.createCombinations(rule,
-				activities);
-		assertEquals(1, combos.size());
-		assertTrue(combos.get(0).contains("A: activity : \"Skyrim\""));
+		String[] rules = comboCreator.createCombinations(rule, activities);
+		assertEquals(1, rules.length);
+		assertTrue(rules[0].contains("A: activity : \"Skyrim\""));
+
 	}
 
 	@Test
@@ -33,16 +33,17 @@ public class CombinationCreatorTest {
 		activities.add("Oblivion");
 		String rule = "formula two( A: activity, B: activity) = {} \n"
 				+ "( <>( event == A ) /\\ <>( event == B) );";
-		ArrayList<String> combos = comboCreator.createCombinations(rule,
-				activities);
-		assertEquals(4, combos.size());
+		String[] rules = comboCreator.createCombinations(rule, activities);
+		assertEquals(4, rules.length);
 
-		assertTrue(combos.get(0).contains("A: activity : \"Skyrim\""));
-		assertTrue(combos.get(0).contains("B: activity : \"Skyrim\""));
-		assertTrue(combos.get(1).contains("A: activity : \"Skyrim\""));
-		assertTrue(combos.get(1).contains("B: activity : \"Oblivion\""));
-		assertTrue(combos.get(2).contains("A: activity : \"Oblivion\""));
-		assertTrue(combos.get(2).contains("B: activity : \"Skyrim\""));
+		assertTrue(rules[0].contains("A: activity : \"Skyrim\""));
+		assertTrue(rules[0].contains("B: activity : \"Skyrim\""));
+		assertTrue(rules[1].contains("A: activity : \"Skyrim\""));
+		assertTrue(rules[1].contains("B: activity : \"Oblivion\""));
+		assertTrue(rules[2].contains("A: activity : \"Oblivion\""));
+		assertTrue(rules[2].contains("B: activity : \"Skyrim\""));
+		// Rule name check
+		assertTrue(rules[2].contains("rule_2"));
 	}
 
 	@Test
@@ -71,5 +72,14 @@ public class CombinationCreatorTest {
 
 		assertEquals("Number of combinations", 25, combos.size());
 		assertEquals(k, combos.get(0).length);
+	}
+
+	@Test
+	public void ruleRenameTest() {
+		String[] input = new String[] { "formula one() := {}",
+				"formula   two() := {}" };
+		String[] output = comboCreator.renameRules(input);
+		assertEquals("formula rule_0() := {}", output[0]);
+		assertEquals("formula rule_1() := {}", output[1]);
 	}
 }
