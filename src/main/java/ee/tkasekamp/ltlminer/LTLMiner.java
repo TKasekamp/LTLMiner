@@ -8,7 +8,9 @@ import org.deckfour.xes.extension.std.XConceptExtension;
 import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
+import org.processmining.plugins.ltlchecker.CheckResultObject;
 import org.processmining.plugins.ltlchecker.LTLChecker;
+import org.processmining.plugins.ltlchecker.RuleModel;
 import org.processmining.plugins.ltlchecker.model.LTLModel;
 
 public class LTLMiner {
@@ -20,7 +22,16 @@ public class LTLMiner {
 		checker = new LTLChecker();
 	}
 
-	public void mine(XLog log, String rule, double threshold) {
+	/**
+	 * The main method for LTLMiner.
+	 * 
+	 * @param log
+	 * @param rule
+	 * @param threshold
+	 *            0 to 1
+	 * @return
+	 */
+	public ArrayList<RuleModel> mine(XLog log, String rule, double threshold) {
 		// get list of activities from log
 		// create list of rules with createCombinations
 		// preProcess rule list to create a LTL model
@@ -28,6 +39,17 @@ public class LTLMiner {
 		// take the output and add rules above the threshold to ArrayList
 		// do something with this ArrayList
 
+		Object[] objList = analyseRule(log, rule);
+		CheckResultObject output = (CheckResultObject) objList[0];
+		ArrayList<RuleModel> result = new ArrayList<>();
+
+		for (RuleModel r : output.getRules()) {
+			if (r.getCoverage() >= threshold) {
+				result.add(r);
+			}
+
+		}
+		return result;
 	}
 
 	/**
@@ -51,6 +73,8 @@ public class LTLMiner {
 		model.setFile(modelString);
 		return checker.analyse(log, model);
 	}
+
+	// public
 
 	private void addRulesToChecker(String[] rules) {
 		Vector<String> selectedRules = new Vector<>();

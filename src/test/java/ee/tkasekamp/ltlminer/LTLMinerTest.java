@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.processmining.plugins.ltlchecker.CheckResultObject;
 import org.processmining.plugins.ltlchecker.LTLChecker;
+import org.processmining.plugins.ltlchecker.RuleModel;
 
 import ee.tkasekamp.ltlminer.util.XLogReader;
 
@@ -45,6 +46,31 @@ public class LTLMinerTest {
 
 		assertEquals("There are a total of 25 combinations from the log", 25,
 				output.getRules().length);
+	}
+
+	@Test
+	public void mineTest() {
+		String rule = "formula always_when_A_then_eventually_E( A: activity , E: activity ) :=  {}\n"
+				+ "    []( ( activity == A  -> <>( activity==E  ) ) ); ";
+		ArrayList<RuleModel> result = miner.mine(log, rule, 0.5);
+		assertEquals("Counted them. So should be 16", 16, result.size());
+
+		String rule2 = "formula is_activity_of_first_state_A( A: activity ) :="
+				+ "{"
+				+ "<h2>Is the activity of the first state equal to <b>A</b>?</h2>"
+				+ "<p> Compare the activity of the first state with <b>A</b> </p>"
+				+ "<p> Arguments:<br>"
+				+ "<ul>"
+				+ "<li><b>A</b> of type set (<i>ate.WorkflowModelElement</i>)</li>"
+				+ "</ul>" + "</p>}" + "activity == A;";
+		ArrayList<RuleModel> result2 = miner.mine(log, rule2, 0.2);
+		assertEquals(1, result2.size());
+
+		String rule3 = "formula query(A :activity, E: activity) := {} \n"
+				+ "(<>(activity == A) /\\  !(<>(activity == E)));";
+		ArrayList<RuleModel> result3 = miner.mine(log, rule3, 0.5);
+		assertEquals(5, result3.size());
+
 	}
 
 }
