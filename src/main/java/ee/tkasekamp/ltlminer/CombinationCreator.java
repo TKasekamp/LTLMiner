@@ -83,7 +83,7 @@ public class CombinationCreator {
 		return rules;
 	}
 
-	private static String ruleName(int i) {
+	public static String ruleName(int i) {
 		return "rule_" + i;
 	}
 

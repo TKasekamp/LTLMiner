@@ -2,9 +2,7 @@ package ee.tkasekamp.ltlminer;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Vector;
 
 import org.deckfour.xes.extension.std.XConceptExtension;
@@ -35,18 +33,6 @@ public class LogReadTest {
 	@Before
 	public void setUp() throws Exception {
 		log = XLogReader.openLog("src/test/resources/exercise1.xes");
-	}
-
-	@Test
-	public void findActivities() {
-		HashSet<String> shouldBe = new HashSet<>();
-		shouldBe.addAll(Arrays.asList("A", "B", "C", "D", "E"));
-
-		assertNotNull(log);
-		HashSet<String> activites = LTLMiner.findAllActivities(log);
-
-		assertEquals(5, activites.size());
-		assertEquals(shouldBe, activites);
 	}
 
 	@Test

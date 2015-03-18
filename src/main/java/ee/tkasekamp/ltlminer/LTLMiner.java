@@ -2,13 +2,23 @@ package ee.tkasekamp.ltlminer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Vector;
 
 import org.deckfour.xes.extension.std.XConceptExtension;
 import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
+import org.processmining.plugins.ltlchecker.LTLChecker;
+import org.processmining.plugins.ltlchecker.model.LTLModel;
 
 public class LTLMiner {
+	CombinationCreator creator;
+	LTLChecker checker;
+
+	public LTLMiner() {
+		creator = new CombinationCreator();
+		checker = new LTLChecker();
+	}
 
 	public void mine(XLog log, String rule, double threshold) {
 		// get list of activities from log
@@ -17,15 +27,43 @@ public class LTLMiner {
 		// analyse LTL model with LTLChecker
 		// take the output and add rules above the threshold to ArrayList
 		// do something with this ArrayList
+
 	}
 
 	/**
-	 * Finds all activities in the input log.
+	 * This is the first part of the miner. It finds all activities from the log
+	 * and creates all possible combinations of rules using the input rule as a
+	 * template. It then uses the {@link LTLChecker} to create an output.
 	 * 
 	 * @param log
-	 * @return
+	 *            {@link XLog}
+	 * @param rule
+	 *            Valid LTL formula with no default arguments.
+	 * @return Object [] form {@link LTLChecker}
 	 */
-	public static HashSet<String> findAllActivities(XLog log) {
+	public Object[] analyseRule(XLog log, String rule) {
+		ArrayList<String> activities = getActivities(log);
+		String[] rules = creator.createCombinations(rule, activities);
+		String modelString = createLTLModel(rules);
+
+		addRulesToChecker(rules);
+		LTLModel model = new LTLModel();
+		model.setFile(modelString);
+		return checker.analyse(log, model);
+	}
+
+	private void addRulesToChecker(String[] rules) {
+		Vector<String> selectedRules = new Vector<>();
+		// Can do this because rules were just renamed and there are exactly
+		// this many
+		for (int i = 0; i < rules.length; i++) {
+			selectedRules.add(CombinationCreator.ruleName(i));
+		}
+		checker.setSelectedRules(selectedRules);
+
+	}
+
+	public ArrayList<String> getActivities(XLog log) {
 		HashSet<String> answ = new HashSet<String>();
 		for (XTrace trace : log) {
 			for (XEvent event : trace) {
@@ -35,11 +73,6 @@ public class LTLMiner {
 			}
 		}
 
-		return answ;
-	}
-
-	public static ArrayList<String> getActivities(XLog log) {
-		HashSet<String> answ = findAllActivities(log);
 		ArrayList<String> a = new ArrayList<>();
 		a.addAll(answ);
 		return a;
@@ -53,8 +86,16 @@ public class LTLMiner {
 	 * @param rules
 	 * @return LTL model ready to be analysed
 	 */
-	public static String createLTLModel(ArrayList<String> rules) {
-		return null;
+	private String createLTLModel(String[] rules) {
+		StringBuilder model = new StringBuilder();
+		// Add more if necessary
+		model.append("set ate.WorkflowModelElement;");
+		model.append("rename ate.WorkflowModelElement as activity; \n");
+		for (String string : rules) {
+			model.append(string);
+			model.append("\n");
+		}
+		return model.toString();
 	}
 
 }
