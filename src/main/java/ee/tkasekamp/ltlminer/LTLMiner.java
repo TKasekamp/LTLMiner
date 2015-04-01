@@ -1,13 +1,9 @@
 package ee.tkasekamp.ltlminer;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Vector;
 
-import org.deckfour.xes.extension.std.XConceptExtension;
-import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
-import org.deckfour.xes.model.XTrace;
 import org.processmining.plugins.ltlchecker.CheckResultObject;
 import org.processmining.plugins.ltlchecker.LTLChecker;
 import org.processmining.plugins.ltlchecker.RuleModel;
@@ -16,10 +12,12 @@ import org.processmining.plugins.ltlchecker.model.LTLModel;
 public class LTLMiner {
 	CombinationCreator creator;
 	LTLChecker checker;
+	LogFilter logFilter;
 
 	public LTLMiner() {
 		creator = new CombinationCreator();
 		checker = new LTLChecker();
+		logFilter = new LogFilter();
 	}
 
 	/**
@@ -64,7 +62,7 @@ public class LTLMiner {
 	 * @return Object [] form {@link LTLChecker}
 	 */
 	public Object[] analyseRule(XLog log, String rule) {
-		ArrayList<String> activities = getActivities(log);
+		ArrayList<String> activities = logFilter.getAllActivities(log);
 		String[] rules = creator.createCombinations(rule, activities);
 		String modelString = createLTLModel(rules);
 
@@ -87,21 +85,7 @@ public class LTLMiner {
 
 	}
 
-	public ArrayList<String> getActivities(XLog log) {
-		HashSet<String> answ = new HashSet<String>();
-		for (XTrace trace : log) {
-			for (XEvent event : trace) {
-				String activityName = XConceptExtension.instance().extractName(
-						event);
-				answ.add(activityName);
-			}
-		}
 
-		ArrayList<String> a = new ArrayList<>();
-		a.addAll(answ);
-		return a;
-
-	}
 
 	/**
 	 * Creates a proper LTL model from all the input rules. Adds necessary stuff

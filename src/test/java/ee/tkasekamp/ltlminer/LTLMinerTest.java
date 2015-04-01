@@ -3,7 +3,6 @@ package ee.tkasekamp.ltlminer;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.deckfour.xes.model.XLog;
 import org.junit.Before;
@@ -23,18 +22,6 @@ public class LTLMinerTest {
 	public void setUp() throws Exception {
 		miner = new LTLMiner();
 		log = XLogReader.openLog("src/test/resources/exercise1.xes");
-	}
-
-	@Test
-	public void getActivitiesFromLog() {
-		ArrayList<String> shouldBe = new ArrayList<>();
-		shouldBe.addAll(Arrays.asList("A", "B", "C", "D", "E"));
-
-		assertNotNull(log);
-		ArrayList<String> activites = miner.getActivities(log);
-
-		assertEquals(5, activites.size());
-		assertEquals(shouldBe, activites);
 	}
 
 	@Test
