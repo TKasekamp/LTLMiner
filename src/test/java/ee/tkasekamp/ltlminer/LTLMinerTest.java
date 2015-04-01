@@ -69,7 +69,7 @@ public class LTLMinerTest {
 		String rule3 = "formula query(A :activity, E: activity) := {} \n"
 				+ "(<>(activity == A) /\\  !(<>(activity == E)));";
 		ArrayList<RuleModel> result3 = miner.mine(log, rule3, 0.5);
-		assertEquals(5, result3.size());
+		assertEquals(4, result3.size());
 
 	}
 

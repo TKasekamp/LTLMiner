@@ -51,8 +51,8 @@ public class LogReadTest {
 		XLog comLog = (XLog) objList[1];
 		XLog ncomLog = (XLog) objList[2];
 
-		assertEquals("Matches everything", 3, comLog.size());
-		assertEquals(0, ncomLog.size());
+		assertEquals("Matches everything", 1, comLog.size());
+		assertEquals(2, ncomLog.size());
 
 	}
 
