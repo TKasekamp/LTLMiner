@@ -21,29 +21,28 @@ import org.deckfour.xes.model.XTrace;
  */
 public class LogFilter {
 
-	public static final int DEFAULT_ACTIVITIES = 10;
+	public static final int DEFAULT_EVENTS = 10;
 
 	/**
-	 * Orders all activities in the log by frequency and returns
-	 * {@link LogFilter#DEFAULT_ACTIVITIES} most frequent.
+	 * Orders all events in the log by frequency and returns
+	 * {@link LogFilter#DEFAULT_EVENTS} most frequent.
 	 * 
 	 * @param log
 	 *            {@link XLog}
-	 * @return
+	 * @return {@link ArrayList} with {@link XEvent} names.
 	 */
 	public ArrayList<String> getFrequent(XLog log) {
-		return getFrequent(log, DEFAULT_ACTIVITIES);
+		return getFrequent(log, DEFAULT_EVENTS);
 	}
 
 	/**
-	 * Orders all activities in the log by frequency and returns the most
-	 * frequent.
+	 * Orders all events in the log by frequency and returns the most frequent.
 	 * 
 	 * @param log
 	 *            {@link XLog}
 	 * @param howMany
-	 *            How many activities to return.
-	 * @return
+	 *            How many event names to return.
+	 * @return {@link ArrayList} with {@link XEvent} names.
 	 */
 	public ArrayList<String> getFrequent(XLog log, int howMany) {
 		Map<String, Integer> freqMap = getFrequencySet(log);
@@ -61,19 +60,19 @@ public class LogFilter {
 	}
 
 	/**
-	 * Get all activities from this log.
+	 * Get all events from this log.
 	 * 
 	 * @param log
 	 *            {@link XLog}
-	 * @return
+	 * @return {@link ArrayList} with {@link XEvent} names.
 	 */
-	public ArrayList<String> getAllActivities(XLog log) {
+	public ArrayList<String> getAllEvents(XLog log) {
 		HashSet<String> answ = new HashSet<String>();
 		for (XTrace trace : log) {
 			for (XEvent event : trace) {
-				String activityName = XConceptExtension.instance().extractName(
+				String eventName = XConceptExtension.instance().extractName(
 						event);
-				answ.add(activityName);
+				answ.add(eventName);
 			}
 		}
 
@@ -83,20 +82,20 @@ public class LogFilter {
 	}
 
 	/**
-	 * Get only activities from the log that are present in the input array.
+	 * Get only events from the log that are present in the input array.
 	 * 
 	 * @param log
 	 *            {@link XLog}
 	 * @param activities
-	 * @return
+	 * @return {@link ArrayList} with {@link XEvent} names.
 	 */
 	public ArrayList<String> getActivities(XLog log, String[] activities) {
 		HashSet<String> answ = new HashSet<String>();
 		for (XTrace trace : log) {
 			for (XEvent event : trace) {
-				String activityName = XConceptExtension.instance().extractName(
+				String eventName = XConceptExtension.instance().extractName(
 						event);
-				answ.add(activityName);
+				answ.add(eventName);
 			}
 		}
 
@@ -111,8 +110,8 @@ public class LogFilter {
 	}
 
 	/**
-	 * Counts the number of times an activity appears in a log. Returns a
-	 * HashMap, which is basically a dictionary.
+	 * Counts the number of times an event appears in a log. Returns a HashMap,
+	 * which is basically a dictionary.
 	 * 
 	 * @param log
 	 *            The log to be analysed
@@ -122,13 +121,13 @@ public class LogFilter {
 		HashMap<String, Integer> activities = new HashMap<String, Integer>();
 		for (XTrace trace : log) {
 			for (XEvent event : trace) {
-				String activityName = XConceptExtension.instance().extractName(
+				String eventName = XConceptExtension.instance().extractName(
 						event);
-				if (activities.containsKey(activityName)) {
-					int current = activities.get(activityName);
-					activities.put(activityName, current + 1);
+				if (activities.containsKey(eventName)) {
+					int current = activities.get(eventName);
+					activities.put(eventName, current + 1);
 				} else {
-					activities.put(activityName, 1);
+					activities.put(eventName, 1);
 				}
 			}
 		}

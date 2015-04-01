@@ -3,6 +3,7 @@ package ee.tkasekamp.ltlminer;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.deckfour.xes.model.XLog;
 import org.junit.Before;
@@ -28,7 +29,8 @@ public class LTLMinerTest {
 	public void analyseRule() {
 		String rule = "formula always_when_A_then_eventually_E( A: activity , E: activity ) :=  {}\n"
 				+ "    []( ( activity == A  -> <>( activity==E  ) ) ); ";
-		Object[] objList = miner.analyseRule(log, rule);
+		Object[] objList = miner.analyseRule(log, rule, new ArrayList<String>(
+				Arrays.asList("A", "B", "C", "D", "E")));
 		CheckResultObject output = (CheckResultObject) objList[0];
 
 		assertEquals("There are a total of 25 combinations from the log", 25,

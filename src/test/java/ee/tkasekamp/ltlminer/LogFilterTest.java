@@ -4,16 +4,10 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import org.deckfour.xes.model.XLog;
 import org.junit.Before;
 import org.junit.Test;
-import org.processmining.plugins.ltlchecker.LTLChecker;
 
 import ee.tkasekamp.ltlminer.util.XLogReader;
 
@@ -33,7 +27,7 @@ public class LogFilterTest {
 		shouldBe.addAll(Arrays.asList("A", "B", "C", "D", "E"));
 
 		assertNotNull(log);
-		ArrayList<String> activites = logFilter.getAllActivities(log);
+		ArrayList<String> activites = logFilter.getAllEvents(log);
 
 		assertEquals(5, activites.size());
 		assertEquals(shouldBe, activites);
