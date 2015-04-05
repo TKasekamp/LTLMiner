@@ -62,4 +62,12 @@ public class LTLMinerTest {
 
 	}
 
+	@Test
+	public void difficultFormula() {
+		String rule4 = "formula query(A :activity, B: activity) := {} \n"
+				+ " (( activity !=B _U activity == A) \\/ [] ( activity != B));";
+		ArrayList<RuleModel> result4 = miner.mine(log, rule4, 0.5);
+		assertEquals(16, result4.size());
+	}
+
 }
