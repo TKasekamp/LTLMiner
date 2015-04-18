@@ -3,16 +3,19 @@ package ee.tkasekamp.ltlminer;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class CombinationCreatorTest {
 	CombinationCreator comboCreator;
+	CombinationCreator noRepetitions;
 
 	@Before
 	public void setUp() throws Exception {
 		comboCreator = new CombinationCreator();
+		noRepetitions = new CombinationCreator(false);
 	}
 
 	@Test
@@ -83,4 +86,35 @@ public class CombinationCreatorTest {
 		assertEquals("formula rule_0() := {}", output.get(0));
 		assertEquals("formula rule_1() := {}", output.get(1));
 	}
+
+	@Test
+	public void noRepetitionsTest() {
+		int k = 2;
+		String[] input = new String[] { "A", "B", "C", "D" };
+		String[] branch = new String[k];
+		ArrayList<String[]> combos = new ArrayList<>();
+		noRepetitions.combineNoRepetitions(input, k, branch, 0, combos);
+
+		assertEquals("Number of combinations", 12, combos.size());
+		assertEquals(k, combos.get(0).length);
+	}
+
+	@Test
+	public void createCombinationsTest() {
+		String rule = "formula two( A: activity, B: activity) = {} \n"
+				+ "( <>( event == A ) /\\ <>( event == B) );";
+		String[] input = new String[] { "A", "B", "C", "D", "E" };
+		ArrayList<String> activities = new ArrayList<>();
+		activities.addAll(Arrays.asList(input));
+
+		String[] withRepetition = comboCreator.createCombinations(rule,
+				activities);
+		assertEquals("Number of combinations", 25, withRepetition.length);
+
+		String[] noRepetition = noRepetitions.createCombinations(rule,
+				activities);
+		assertEquals("Number of combinations", 20, noRepetition.length);
+
+	}
+
 }

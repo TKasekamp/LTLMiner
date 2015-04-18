@@ -37,6 +37,16 @@ public class LTLMiner {
 	}
 
 	/**
+	 * @param repetitions
+	 *            True to create repetitions, false otherwise
+	 */
+	public LTLMiner(boolean repetitions) {
+		creator = new CombinationCreator(repetitions);
+		checker = new LTLChecker();
+		logFilter = new LogFilter();
+	}
+
+	/**
 	 * The main method for LTLMiner. Tests the rule with the
 	 * {@link LogFilter#DEFAULT_EVENTS} most frequent events in the log.
 	 * Generates all possible combinations of the rule with those events. Uses

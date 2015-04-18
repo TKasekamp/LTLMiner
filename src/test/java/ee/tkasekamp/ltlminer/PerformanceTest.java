@@ -12,7 +12,8 @@ import org.processmining.plugins.ltlchecker.RuleModel;
 import ee.tkasekamp.ltlminer.util.XLogReader;
 
 /**
- * Tests that measure time. Testing against TLQC.
+ * Tests that measure time. Testing against TLQC. Tests will be done with no
+ * repeating activity arguments because TLQC doesn't repeat them.
  * 
  * @author TKasekamp
  *
@@ -25,7 +26,7 @@ public class PerformanceTest {
 
 	@Before
 	public void setup() throws Exception {
-		miner = new LTLMiner();
+		miner = new LTLMiner(false);
 		log = XLogReader
 				.openLog("C:/Users/Tonis/Downloads/TLQC/TLQC/dist/repairExample.xes");
 		log2 = XLogReader.openLog("src/test/resources/exercise1.xes");
@@ -42,7 +43,7 @@ public class PerformanceTest {
 
 		System.out.println("Time taken: " + time);
 
-		assertEquals(64, result.size());
+		assertEquals(56, result.size());
 
 	}
 
@@ -56,7 +57,7 @@ public class PerformanceTest {
 
 		System.out.println("Time taken: " + time);
 
-		assertEquals(25, result.size());
+		assertEquals(20, result.size());
 
 		// for (RuleModel ruleModel : result) {
 		// System.out.println(ruleModel.getLtlRule());
@@ -73,7 +74,7 @@ public class PerformanceTest {
 
 		System.out.println("Time taken: " + time);
 
-		assertEquals(64, result.size());
+		assertEquals(552, result.size());
 
 	}
 

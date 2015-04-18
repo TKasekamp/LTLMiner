@@ -8,9 +8,20 @@ public class CombinationCreator {
 	private Pattern argumentPattern;
 	private Pattern ruleNamePattern;
 
+	/** true by default */
+	private boolean repetitions;
+
+	/**
+	 * Default constructor. Create combinations with repetitions.
+	 */
 	public CombinationCreator() {
+		this(true);
+	}
+
+	public CombinationCreator(boolean repetitions) {
 		argumentPattern = Pattern.compile("\\w(\\s)*(:)(\\s)*(activity)");
 		ruleNamePattern = Pattern.compile("(formula)(\\s)*(\\w)+(\\()");
+		this.repetitions = repetitions;
 	}
 
 	public String[] createRules(String rule, ArrayList<String> activities) {
@@ -41,7 +52,11 @@ public class CombinationCreator {
 		int k = numberOfArguments(rule);
 		String[] input = activities.toArray(new String[activities.size()]);
 		String[] branch = new String[k];
-		combine(input, k, branch, 0, combos);
+
+		if (repetitions)
+			combine(input, k, branch, 0, combos);
+		else
+			combineNoRepetitions(input, k, branch, 0, combos);
 
 		ArrayList<String> rules = new ArrayList<>();
 		// Actually combine stuff
@@ -79,6 +94,38 @@ public class CombinationCreator {
 			branch[numElem++] = arr[i];
 			combine(arr, k, branch, numElem, combos);
 			--numElem;
+		}
+	}
+
+	/**
+	 * Generates all possible combinations from arr with lenght k. Does not
+	 * allow repetiton in the finshed arrays.
+	 * <code>http://exceptional-code.blogspot.com/2012/09/generating-all-permutations.html</code>
+	 * 
+	 * @param arr
+	 *            Where to take arguments from
+	 * @param k
+	 *            How deep to go
+	 * @param branch
+	 *            Current working array
+	 * @param numElem
+	 *            Current depth
+	 * @param combos
+	 *            Holds finished arrays
+	 */
+	public void combineNoRepetitions(String[] arr, int k, String[] branch,
+			int numElem, ArrayList<String[]> combos) {
+		if (numElem == k) {
+			combos.add(createCopy(branch));
+			return;
+		}
+
+		for (int i = 0; i < arr.length; ++i) {
+			if (!arrayIncludesElement(branch, arr[i])) {
+				branch[numElem++] = arr[i];
+				combineNoRepetitions(arr, k, branch, numElem, combos);
+				--numElem;
+			}
 		}
 	}
 
@@ -148,6 +195,29 @@ public class CombinationCreator {
 		}
 
 		return copy;
+	}
+
+	/**
+	 * Checks if the branch includes the element. Returns false if the first
+	 * element is null. Otherwise checks if first element equals to input
+	 * element.
+	 * 
+	 * @param branch
+	 * @param element
+	 * @return
+	 */
+	private boolean arrayIncludesElement(String[] branch, String element) {
+		if (branch[0] == null)
+			return false;
+		return branch[0].equals(element);
+	}
+
+	public boolean isRepetitions() {
+		return repetitions;
+	}
+
+	public void setRepetitions(boolean repetitions) {
+		this.repetitions = repetitions;
 	}
 
 }
