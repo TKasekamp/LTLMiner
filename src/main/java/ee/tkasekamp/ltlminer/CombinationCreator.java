@@ -24,7 +24,7 @@ public class CombinationCreator {
 		this.repetitions = repetitions;
 	}
 
-	public String[] createRules(String rule, ArrayList<String> activities) {
+	public String[] createRule(String rule, ArrayList<String> activities) {
 		ArrayList<String> finishedRules = createCombinations(rule, activities);
 
 		// Rename rules

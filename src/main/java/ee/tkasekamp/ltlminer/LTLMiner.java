@@ -188,7 +188,7 @@ public class LTLMiner {
 	 */
 	public Object[] analyseRule(XLog log, String rule,
 			ArrayList<String> activities) {
-		String[] rules = creator.createRules(rule, activities);
+		String[] rules = creator.createRule(rule, activities);
 		String modelString = createLTLModel(rules);
 
 		addRulesToChecker(rules);

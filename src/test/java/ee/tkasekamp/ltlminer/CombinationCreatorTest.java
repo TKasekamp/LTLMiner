@@ -23,7 +23,7 @@ public class CombinationCreatorTest {
 		ArrayList<String> activities = new ArrayList<>();
 		activities.add("Skyrim");
 		String rule = "formula one( A: activity) = {} \n" + "<>( event == A );";
-		String[] rules = comboCreator.createRules(rule, activities);
+		String[] rules = comboCreator.createRule(rule, activities);
 		assertEquals(1, rules.length);
 		assertTrue(rules[0].contains("A: activity : \"Skyrim\""));
 
@@ -36,7 +36,7 @@ public class CombinationCreatorTest {
 		activities.add("Oblivion");
 		String rule = "formula two( A: activity, B: activity) = {} \n"
 				+ "( <>( event == A ) /\\ <>( event == B) );";
-		String[] rules = comboCreator.createRules(rule, activities);
+		String[] rules = comboCreator.createRule(rule, activities);
 		assertEquals(4, rules.length);
 
 		assertTrue(rules[0].contains("A: activity : \"Skyrim\""));
@@ -107,11 +107,11 @@ public class CombinationCreatorTest {
 		ArrayList<String> activities = new ArrayList<>();
 		activities.addAll(Arrays.asList(input));
 
-		String[] withRepetition = comboCreator.createCombinations(rule,
+		String[] withRepetition = comboCreator.createRule(rule,
 				activities);
 		assertEquals("Number of combinations", 25, withRepetition.length);
 
-		String[] noRepetition = noRepetitions.createCombinations(rule,
+		String[] noRepetition = noRepetitions.createRule(rule,
 				activities);
 		assertEquals("Number of combinations", 20, noRepetition.length);
 
