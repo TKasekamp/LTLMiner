@@ -58,6 +58,12 @@ public class LTLMiner {
 		return filter(objList, threshold);
 	}
 
+	public ArrayList<RuleModel> mine(XLog log, String[] rules, double threshold) {
+		ArrayList<String> ac = logFilter.getFrequent(log);
+		Object[] objList = analyseRules(log, rules, ac);
+		return filter(objList, threshold);
+	}
+
 	/**
 	 * Tests the rule with the input howManyEvents most frequent events in the
 	 * log. Generates all possible combinations of the rule with those events.
@@ -88,6 +94,13 @@ public class LTLMiner {
 		return filter(objList, threshold);
 	}
 
+	public ArrayList<RuleModel> mine(XLog log, String[] rules,
+			double threshold, int howManyEvents) {
+		ArrayList<String> ac = logFilter.getFrequent(log, howManyEvents);
+		Object[] objList = analyseRules(log, rules, ac);
+		return filter(objList, threshold);
+	}
+
 	/**
 	 * Gets all events from from the log and generates all possible combinations
 	 * with rule. Uses LTLChecker to test all those rules. Returns
@@ -109,6 +122,14 @@ public class LTLMiner {
 
 		ArrayList<String> ac = logFilter.getAllEvents(log);
 		Object[] objList = analyseRule(log, rule, ac);
+		return filter(objList, threshold);
+	}
+
+	public ArrayList<RuleModel> mineAll(XLog log, String[] rules,
+			double threshold) {
+
+		ArrayList<String> ac = logFilter.getAllEvents(log);
+		Object[] objList = analyseRules(log, rules, ac);
 		return filter(objList, threshold);
 	}
 
@@ -136,6 +157,14 @@ public class LTLMiner {
 		return filter(objList, threshold);
 	}
 
+	public ArrayList<RuleModel> mine(XLog log, String[] rules,
+			double threshold, String[] eventNames) {
+
+		ArrayList<String> ac = logFilter.getActivities(log, eventNames);
+		Object[] objList = analyseRules(log, rules, ac);
+		return filter(objList, threshold);
+	}
+
 	/**
 	 * This is the first part of the miner. It creates all possible combinations
 	 * of rules using the input rule as a template. It then uses the
@@ -149,7 +178,18 @@ public class LTLMiner {
 	 */
 	public Object[] analyseRule(XLog log, String rule,
 			ArrayList<String> activities) {
-		String[] rules = creator.createCombinations(rule, activities);
+		String[] rules = creator.createRules(rule, activities);
+		String modelString = createLTLModel(rules);
+
+		addRulesToChecker(rules);
+		LTLModel model = new LTLModel();
+		model.setFile(modelString);
+		return checker.analyse(log, model);
+	}
+
+	public Object[] analyseRules(XLog log, String[] ltlFormulas,
+			ArrayList<String> activities) {
+		String[] rules = creator.createRules(ltlFormulas, activities);
 		String modelString = createLTLModel(rules);
 
 		addRulesToChecker(rules);

@@ -70,4 +70,15 @@ public class LTLMinerTest {
 		assertEquals(16, result4.size());
 	}
 
+	@Test
+	public void multipleFormulaTest() {
+		String rule4 = "formula query(A :activity, B: activity) := {} \n"
+				+ " (( activity !=B _U activity == A) \\/ [] ( activity != B));";
+		String rule = "formula always_when_A_then_eventually_E( A: activity , E: activity ) :=  {}\n"
+				+ "    []( ( activity == A  -> <>( activity==E  ) ) ); ";
+		String[] rules = { rule, rule4 };
+		ArrayList<RuleModel> result4 = miner.mineAll(log, rules, 0.0);
+		assertEquals(50, result4.size());
+	}
+
 }

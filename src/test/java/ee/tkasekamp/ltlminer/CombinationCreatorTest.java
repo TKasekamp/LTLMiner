@@ -20,7 +20,7 @@ public class CombinationCreatorTest {
 		ArrayList<String> activities = new ArrayList<>();
 		activities.add("Skyrim");
 		String rule = "formula one( A: activity) = {} \n" + "<>( event == A );";
-		String[] rules = comboCreator.createCombinations(rule, activities);
+		String[] rules = comboCreator.createRules(rule, activities);
 		assertEquals(1, rules.length);
 		assertTrue(rules[0].contains("A: activity : \"Skyrim\""));
 
@@ -33,7 +33,7 @@ public class CombinationCreatorTest {
 		activities.add("Oblivion");
 		String rule = "formula two( A: activity, B: activity) = {} \n"
 				+ "( <>( event == A ) /\\ <>( event == B) );";
-		String[] rules = comboCreator.createCombinations(rule, activities);
+		String[] rules = comboCreator.createRules(rule, activities);
 		assertEquals(4, rules.length);
 
 		assertTrue(rules[0].contains("A: activity : \"Skyrim\""));
@@ -76,10 +76,11 @@ public class CombinationCreatorTest {
 
 	@Test
 	public void ruleRenameTest() {
-		String[] input = new String[] { "formula one() := {}",
-				"formula   two() := {}" };
-		String[] output = comboCreator.renameRules(input);
-		assertEquals("formula rule_0() := {}", output[0]);
-		assertEquals("formula rule_1() := {}", output[1]);
+		ArrayList<String> input = new ArrayList<>();
+		input.add("formula one() := {}");
+		input.add("formula   two() := {}");
+		ArrayList<String> output = comboCreator.renameRules(input);
+		assertEquals("formula rule_0() := {}", output.get(0));
+		assertEquals("formula rule_1() := {}", output.get(1));
 	}
 }

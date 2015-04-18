@@ -13,24 +13,42 @@ public class CombinationCreator {
 		ruleNamePattern = Pattern.compile("(formula)(\\s)*(\\w)+(\\()");
 	}
 
-	public String[] createCombinations(String rule, ArrayList<String> activities) {
+	public String[] createRules(String rule, ArrayList<String> activities) {
+		ArrayList<String> finishedRules = createCombinations(rule, activities);
 
+		// Rename rules
+		finishedRules = renameRules(finishedRules);
+
+		return finishedRules.toArray(new String[finishedRules.size()]);
+	}
+
+	public String[] createRules(String[] ltlformulas,
+			ArrayList<String> activities) {
+		ArrayList<String> finishedRules = new ArrayList<>();
+
+		for (int i = 0; i < ltlformulas.length; i++) {
+			finishedRules
+					.addAll(createCombinations(ltlformulas[i], activities));
+		}
+
+		finishedRules = renameRules(finishedRules);
+		return finishedRules.toArray(new String[finishedRules.size()]);
+	}
+
+	private ArrayList<String> createCombinations(String rule,
+			ArrayList<String> activities) {
 		ArrayList<String[]> combos = new ArrayList<>();
 		int k = numberOfArguments(rule);
 		String[] input = activities.toArray(new String[activities.size()]);
 		String[] branch = new String[k];
 		combine(input, k, branch, 0, combos);
 
-		String[] rules = new String[combos.size()];
+		ArrayList<String> rules = new ArrayList<>();
 		// Actually combine stuff
 
 		for (int i = 0; i < combos.size(); i++) {
-			rules[i] = replaceText(rule, combos.get(i));
+			rules.add(replaceText(rule, combos.get(i)));
 		}
-
-		// Rename rules
-		rules = renameRules(rules);
-
 		return rules;
 	}
 
@@ -73,12 +91,16 @@ public class CombinationCreator {
 		return count;
 	}
 
-	public String[] renameRules(String[] rules) {
+	public ArrayList<String> renameRules(ArrayList<String> rules) {
+		return renameRules(rules, 0);
+	}
+
+	public ArrayList<String> renameRules(ArrayList<String> rules, int startIndex) {
 		Matcher matcher;
 
-		for (int i = 0; i < rules.length; i++) {
-			matcher = ruleNamePattern.matcher(rules[i]);
-			rules[i] = matcher.replaceAll("formula " + ruleName(i) + "(");
+		for (int i = startIndex; i < rules.size(); i++) {
+			matcher = ruleNamePattern.matcher(rules.get(i));
+			rules.set(i, matcher.replaceAll("formula " + ruleName(i) + "("));
 		}
 		return rules;
 	}
