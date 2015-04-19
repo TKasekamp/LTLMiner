@@ -19,7 +19,7 @@ public class CombinationCreator {
 	}
 
 	public CombinationCreator(boolean repetitions) {
-		argumentPattern = Pattern.compile("\\w(\\s)*(:)(\\s)*(activity)");
+		argumentPattern = Pattern.compile("\\w+(\\s)*(:)(\\s)*\\w+");
 		ruleNamePattern = Pattern.compile("(formula)(\\s)*(\\w)+(\\()");
 		this.repetitions = repetitions;
 	}
