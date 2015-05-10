@@ -1,6 +1,9 @@
 package ee.tkasekamp.ltlminer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +14,9 @@ public class CombinationCreator {
 	/** true by default */
 	private boolean repetitions;
 
+	private HashMap<String, Integer> positions;
+	private HashMap<String, String[]> eventReplacement;
+
 	/**
 	 * Default constructor. Create combinations with repetitions.
 	 */
@@ -19,7 +25,7 @@ public class CombinationCreator {
 	}
 
 	public CombinationCreator(boolean repetitions) {
-		argumentPattern = Pattern.compile("\\w+(\\s)*(:)(\\s)*\\w+");
+		argumentPattern = Pattern.compile("(\\w+)(\\s)*(:)(\\s)*(\\w+)");
 		ruleNamePattern = Pattern.compile("(formula)(\\s)*(\\w)+(\\()");
 		this.repetitions = repetitions;
 	}
@@ -30,6 +36,41 @@ public class CombinationCreator {
 		// Rename rules
 		finishedRules = renameRules(finishedRules);
 
+		return finishedRules.toArray(new String[finishedRules.size()]);
+	}
+
+	public String[] createRule(String rule, ArrayList<String> activities,
+			HashMap<String, String[]> eventReplacement) {
+		positions = new HashMap<String, Integer>();
+		createPositions(rule);
+		// System.out.println(positions);
+		this.eventReplacement = eventReplacement;
+
+		ArrayList<String> finishedRules = createCombinations(rule, activities);
+
+		// Rename rules
+		finishedRules = renameRules(finishedRules);
+
+		return finishedRules.toArray(new String[finishedRules.size()]);
+	}
+
+	public String[] createRules(String[] ltlFormulas,
+			ArrayList<String> activities,
+			HashMap<String, String[]> eventReplacement) {
+		ArrayList<String> finishedRules = new ArrayList<>();
+
+		for (String rule : ltlFormulas) {
+			// System.out.println("Process rule");
+			String[] bla = createRule(rule, activities, eventReplacement);
+
+			for (String string : bla) {
+				finishedRules.add(string);
+			}
+			// System.out.println("Main size: " + finishedRules.size());
+
+		}
+
+		finishedRules = renameRules(finishedRules);
 		return finishedRules.toArray(new String[finishedRules.size()]);
 	}
 
@@ -46,6 +87,18 @@ public class CombinationCreator {
 		return finishedRules.toArray(new String[finishedRules.size()]);
 	}
 
+	private void createPositions(String rule) {
+		Matcher m = argumentPattern.matcher(rule);
+
+		int counter = 0;
+		while (m.find()) {
+			String text = m.group(1);
+			positions.put(text, counter);
+			counter++;
+		}
+
+	}
+
 	private ArrayList<String> createCombinations(String rule,
 			ArrayList<String> activities) {
 		ArrayList<String[]> combos = new ArrayList<>();
@@ -58,6 +111,10 @@ public class CombinationCreator {
 		else
 			combineNoRepetitions(input, k, branch, 0, combos);
 
+		// System.out.println(combos.size());
+		if (positions != null)
+			combos = filterCombinations(combos);
+
 		ArrayList<String> rules = new ArrayList<>();
 		// Actually combine stuff
 
@@ -65,6 +122,50 @@ public class CombinationCreator {
 			rules.add(replaceText(rule, combos.get(i)));
 		}
 		return rules;
+	}
+
+	private ArrayList<String[]> filterCombinations(ArrayList<String[]> combos) {
+		// ArrayList<String[]> newCombos = new ArrayList<>();
+
+		int position;
+		String[] suitable;
+		Iterator it = eventReplacement.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+
+			try {
+				position = positions.get(pair.getKey());
+			} catch (NullPointerException e) {
+				continue;
+			}
+			suitable = (String[]) pair.getValue();
+
+			Iterator<String[]> it2 = combos.iterator();
+			// System.out.println("Combos size " + combos.size());
+			while (it2.hasNext()) {
+				// System.out.println(it2.next());
+				String[] currentCombo = it2.next();
+				boolean ok = true;
+
+				for (String fuckThisThing : suitable) {
+					// System.out.println("Checking pos " + position + ","
+					// + currentCombo[position] + " and " + fuckThisThing);
+					if (currentCombo[position].equals(fuckThisThing)) {
+						ok = false;
+						break;
+					}
+				}
+
+				if (ok) {
+					// System.out.println("Not ok " + currentCombo[0] + " "
+					// + currentCombo[1]);
+					it2.remove();
+				}
+			}
+
+			// System.out.println("Size " + combos.size());
+		}
+		return combos;
 	}
 
 	/**
@@ -172,7 +273,6 @@ public class CombinationCreator {
 		int counter = 0;
 		while (m.find()) {
 			String text = m.group(0);
-
 			text += " : \"" + combination[counter] + "\"";
 			m.appendReplacement(sb, Matcher.quoteReplacement(text));
 			counter++;

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -107,14 +108,57 @@ public class CombinationCreatorTest {
 		ArrayList<String> activities = new ArrayList<>();
 		activities.addAll(Arrays.asList(input));
 
-		String[] withRepetition = comboCreator.createRule(rule,
-				activities);
+		String[] withRepetition = comboCreator.createRule(rule, activities);
 		assertEquals("Number of combinations", 25, withRepetition.length);
 
-		String[] noRepetition = noRepetitions.createRule(rule,
-				activities);
+		String[] noRepetition = noRepetitions.createRule(rule, activities);
 		assertEquals("Number of combinations", 20, noRepetition.length);
 
+	}
+
+	@Test
+	public void specificReplacementsTest() {
+		String rule = "formula two( A: activity, B: activity) = {} \n"
+				+ "( <>( event == A ) /\\ <>( event == B) );";
+		String[] input = new String[] { "A", "B", "C", "D", "E" };
+		ArrayList<String> activities = new ArrayList<>();
+		activities.addAll(Arrays.asList(input));
+		HashMap<String, String[]> replacements = new HashMap<>();
+		replacements.put("A", new String[] { "C", "D", "A" });
+		replacements.put("B", new String[] { "A", "B" });
+
+		String[] withRepetition = comboCreator.createRule(rule, activities,
+				replacements);
+		assertEquals("Number of combinations", 6, withRepetition.length);
+
+		String[] noRepetition = noRepetitions.createRule(rule, activities,
+				replacements);
+		assertEquals("Number of combinations", 5, noRepetition.length);
+	}
+
+	@Test
+	public void specificReplacementsMultipleRules() {
+		String rule = "formula two( A: activity, B: activity) = {} \n"
+				+ "( <>( event == A ) /\\ <>( event == B) );";
+		String rule2 = "formula two( E: activity, X: activity) = {} \n"
+				+ "( <>( event == E ) /\\ <>( event == X) );";
+		String[] rules = new String[] { rule, rule2 };
+		String[] input = new String[] { "A", "B", "C", "D", "E" };
+		ArrayList<String> activities = new ArrayList<>();
+		activities.addAll(Arrays.asList(input));
+		HashMap<String, String[]> replacements = new HashMap<>();
+		replacements.put("A", new String[] { "C", "D", "A" });
+		replacements.put("B", new String[] { "A", "B" });
+		replacements.put("E", new String[] { "C", "B" });
+		replacements.put("X", new String[] { "E" });
+
+		String[] withRepetition = comboCreator.createRules(rules, activities,
+				replacements);
+		assertEquals("Number of combinations", 8, withRepetition.length);
+
+		String[] noRepetition = noRepetitions.createRules(rules, activities,
+				replacements);
+		assertEquals("Number of combinations", 7, noRepetition.length);
 	}
 
 }

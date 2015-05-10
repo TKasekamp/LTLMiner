@@ -1,6 +1,7 @@
 package ee.tkasekamp.ltlminer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.deckfour.xes.model.XLog;
@@ -155,23 +156,23 @@ public class LTLMiner {
 	 *            <code>formula doThis(A:activity)= {...}</code>
 	 * @param threshold
 	 *            0 to 1
-	 * @param eventNames
-	 *            Creates rule combinations with all these {@link String}'s.
+	 * @param eventReplacement
+	 *            What to replace with what.
 	 * @return
 	 */
 	public ArrayList<RuleModel> mine(XLog log, String rule, double threshold,
-			String[] eventNames) {
+			HashMap<String, String[]> eventReplacement) {
 
-		ArrayList<String> ac = logFilter.getActivities(log, eventNames);
-		Object[] objList = analyseRule(log, rule, ac);
+		ArrayList<String> ac = logFilter.getAllEvents(log);
+		Object[] objList = analyseRule(log, rule, ac, eventReplacement);
 		return filter(objList, threshold);
 	}
 
 	public ArrayList<RuleModel> mine(XLog log, String[] rules,
-			double threshold, String[] eventNames) {
+			double threshold, HashMap<String, String[]> eventReplacement) {
 
-		ArrayList<String> ac = logFilter.getActivities(log, eventNames);
-		Object[] objList = analyseRules(log, rules, ac);
+		ArrayList<String> ac = logFilter.getAllEvents(log);
+		Object[] objList = analyseRules(log, rules, ac, eventReplacement);
 		return filter(objList, threshold);
 	}
 
@@ -197,9 +198,34 @@ public class LTLMiner {
 		return checker.analyse(log, model);
 	}
 
+	public Object[] analyseRule(XLog log, String rule,
+			ArrayList<String> activities,
+			HashMap<String, String[]> eventReplacement) {
+		String[] rules = creator.createRule(rule, activities, eventReplacement);
+		String modelString = createLTLModel(rules);
+
+		addRulesToChecker(rules);
+		LTLModel model = new LTLModel();
+		model.setFile(modelString);
+		return checker.analyse(log, model);
+	}
+
 	public Object[] analyseRules(XLog log, String[] ltlFormulas,
 			ArrayList<String> activities) {
 		String[] rules = creator.createRules(ltlFormulas, activities);
+		String modelString = createLTLModel(rules);
+
+		addRulesToChecker(rules);
+		LTLModel model = new LTLModel();
+		model.setFile(modelString);
+		return checker.analyse(log, model);
+	}
+
+	public Object[] analyseRules(XLog log, String[] ltlFormulas,
+			ArrayList<String> activities,
+			HashMap<String, String[]> eventReplacement) {
+		String[] rules = creator.createRules(ltlFormulas, activities,
+				eventReplacement);
 		String modelString = createLTLModel(rules);
 
 		addRulesToChecker(rules);
