@@ -21,7 +21,7 @@ public class LTLMinerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		miner = new LTLMiner();
+		miner = new LTLMiner(true);
 		log = XLogReader.openLog("src/test/resources/exercise1.xes");
 	}
 

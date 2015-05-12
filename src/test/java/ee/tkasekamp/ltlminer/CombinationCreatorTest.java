@@ -15,8 +15,8 @@ public class CombinationCreatorTest {
 
 	@Before
 	public void setUp() throws Exception {
-		comboCreator = new CombinationCreator();
-		noRepetitions = new CombinationCreator(false);
+		comboCreator = new CombinationCreator(true);
+		noRepetitions = new CombinationCreator();
 	}
 
 	@Test

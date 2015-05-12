@@ -11,17 +11,17 @@ public class CombinationCreator {
 	private Pattern argumentPattern;
 	private Pattern ruleNamePattern;
 
-	/** true by default */
+	/** false by default */
 	private boolean repetitions;
 
 	private HashMap<String, Integer> positions;
 	private HashMap<String, String[]> eventReplacement;
 
 	/**
-	 * Default constructor. Create combinations with repetitions.
+	 * Default constructor. Do not Create combinations with repetitions.
 	 */
 	public CombinationCreator() {
-		this(true);
+		this(false);
 	}
 
 	public CombinationCreator(boolean repetitions) {
