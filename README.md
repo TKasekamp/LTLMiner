@@ -1,8 +1,8 @@
 LTLMiner
 =============
 
-For all your Minecraft needs!
+Application developed for discovering declerative process models.
 
-Sorry, this is just a tool for process mining that uses a version of LTLChecker found [here](https://bitbucket.org/TKasekamp/ltlchecker-alone).
+This is a tool for process mining that uses a version of LTLChecker found [here](https://bitbucket.org/TKasekamp/ltlchecker-alone).
 
-More to come. Soon. Maybe.
+Performance tests can be found [here](https://github.com/TKasekamp/ltlminer-tests).
