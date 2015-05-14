@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class CombinationCreator {
 	private Pattern argumentPattern;
 	private Pattern ruleNamePattern;
+	private Pattern leftActivity;
 
 	/** false by default */
 	private boolean repetitions;
@@ -28,6 +29,91 @@ public class CombinationCreator {
 		argumentPattern = Pattern.compile("(\\w+)(\\s)*(:)(\\s)*(\\w+)");
 		ruleNamePattern = Pattern.compile("(formula)(\\s)*(\\w)+(\\()");
 		this.repetitions = repetitions;
+		
+		leftActivity = Pattern.compile("(activity)(\\s)*(==)(\\s)*(\\w+)");
+		
+	}
+
+	public String[] createRule(String rule, ArrayList<String> activities, ArrayList<String> lifecycles) {
+		ArrayList<String> finishedRules = createCombinations(rule, activities, lifecycles);
+//		System.out.println(finishedRules.size());
+
+		// Rename rules
+		finishedRules = renameRules(finishedRules);
+
+		return finishedRules.toArray(new String[finishedRules.size()]);
+	}
+	
+	private ArrayList<String> createCombinations(String rule,
+			ArrayList<String> activities, ArrayList<String> lifecycles) {
+		ArrayList<String[]> combos = new ArrayList<>();
+		int k = numberOfArguments(rule);
+		String[] input = activities.toArray(new String[activities.size()]);
+		String[] branch = new String[k];
+
+		if (repetitions)
+			combine(input, k, branch, 0, combos);
+		else
+			combineNoRepetitions(input, k, branch, 0, combos);
+
+		// System.out.println(combos.size());
+		if (positions != null)
+			combos = filterCombinations(combos);
+
+		ArrayList<String> rules = new ArrayList<>();
+		// Actually combine stuff
+
+		for (int i = 0; i < combos.size(); i++) {
+			rules.add(replaceText(rule, combos.get(i)));
+		}
+//		System.out.println("There are rules:" + rules.size());
+		// Lifecycle stuff
+		ArrayList<String[]> combos2 = new ArrayList<>();
+		int k2 = numberOfLifecycles(rule);
+//		System.out.println(k2);
+		String[] input2 = lifecycles.toArray(new String[lifecycles.size()]);
+		String[] branch2 = new String[k2];
+
+		combine(input2, k2, branch2, 0, combos2);
+
+		
+//		System.out.println("Number of combos: " + combos2.size());
+		ArrayList<String> rules2 = new ArrayList<>();
+		// Actually combine stuff
+
+		for (String rulez : rules) {
+			for (int i = 0; i < combos2.size(); i++) {
+				rules2.add(replaceLifecycles(rulez, combos2.get(i)));
+			}	
+		}
+		
+
+		
+		return rules2;
+	}
+
+	private String replaceLifecycles(String rulez, String[] combination) {
+		Matcher m = leftActivity.matcher(rulez);
+		StringBuffer sb = new StringBuffer(rulez.length());
+
+		int counter = 0;
+		while (m.find()) {
+//			String text = m.group(5);
+			String text = "(activity == "+ m.group(5) + "/\\ eventtype == \"" + combination[counter] + "\")";
+			m.appendReplacement(sb, Matcher.quoteReplacement(text));
+			counter++;
+		}
+		m.appendTail(sb);
+		return sb.toString();
+	}
+
+	private int numberOfLifecycles(String rule) {
+		Matcher matcher = leftActivity.matcher(rule);
+
+		int count = 0;
+		while (matcher.find())
+			count++;
+		return count;
 	}
 
 	public String[] createRule(String rule, ArrayList<String> activities) {
@@ -188,6 +274,7 @@ public class CombinationCreator {
 			ArrayList<String[]> combos) {
 		if (numElem == k) {
 			combos.add(createCopy(branch));
+//			System.out.println("Sfasdf");
 			return;
 		}
 

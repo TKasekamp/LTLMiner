@@ -28,4 +28,17 @@ public class UsageTest {
 			System.out.println(rule.getCoverage() + " " + rule.getLtlRule());
 		}
 	}
+	
+	@Test
+	public void t2() throws Exception {
+		String formula = "formula notCoExistence( A: activity , B: activity ) :=  { }"
+				+ "!( (<>(activity == A) /\\ <>(activity == B) ));";
+		LTLMiner miner = new LTLMiner(); 
+		XLog log = XLogReader.openLog("src/test/resources/orderGoodsLog.xes");
+		ArrayList<RuleModel> result = miner.mineAllLifecycles(log, formula, 0.0);
+
+		for (RuleModel rule : result) {
+			System.out.println(rule.getCoverage() + " " + rule.getLtlRule());
+		}
+	}
 }

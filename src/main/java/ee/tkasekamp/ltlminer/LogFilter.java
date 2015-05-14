@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.deckfour.xes.extension.std.XConceptExtension;
+import org.deckfour.xes.extension.std.XLifecycleExtension;
 import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
@@ -73,6 +74,21 @@ public class LogFilter {
 				String eventName = XConceptExtension.instance().extractName(
 						event);
 				answ.add(eventName);
+			}
+		}
+
+		ArrayList<String> a = new ArrayList<>();
+		a.addAll(answ);
+		return a;
+	}
+	
+
+	public ArrayList<String> getLifecycles(XLog log) {
+		HashSet<String> answ = new HashSet<String>();
+		for (XTrace trace : log) {
+			for (XEvent event : trace) {
+				String eventType = XLifecycleExtension.instance().extractTransition(event);
+				answ.add(eventType);
 			}
 		}
 

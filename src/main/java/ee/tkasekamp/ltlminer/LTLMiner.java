@@ -144,6 +144,14 @@ public class LTLMiner {
 		return filter(objList, threshold);
 	}
 
+	public ArrayList<RuleModel> mineAllLifecycles(XLog log, String rule, double threshold) {
+
+		ArrayList<String> ac = logFilter.getAllEvents(log);
+		ArrayList<String> li = logFilter.getLifecycles(log);
+//		System.out.println(li.size());
+		Object[] objList = analyseRule(log, rule, ac, li);
+		return filter(objList, threshold);
+	}
 	/**
 	 * Generates all possible combinations of the rule with the activities
 	 * provided. Uses LTLChecker to test all those rules. Returns
@@ -190,6 +198,17 @@ public class LTLMiner {
 	public Object[] analyseRule(XLog log, String rule,
 			ArrayList<String> activities) {
 		String[] rules = creator.createRule(rule, activities);
+		String modelString = createLTLModel(rules);
+
+		addRulesToChecker(rules);
+		LTLModel model = new LTLModel();
+		model.setFile(modelString);
+		return checker.analyse(log, model);
+	}
+	
+	public Object[] analyseRule(XLog log, String rule,
+			ArrayList<String> activities, ArrayList<String> lifecycles) {
+		String[] rules = creator.createRule(rule, activities,lifecycles);
 		String modelString = createLTLModel(rules);
 
 		addRulesToChecker(rules);
@@ -255,7 +274,8 @@ public class LTLMiner {
 	private String createLTLModel(String[] rules) {
 		StringBuilder model = new StringBuilder();
 		// Add more if necessary
-		model.append("set ate.WorkflowModelElement;");
+		model.append("set ate.EventType;set ate.WorkflowModelElement;");
+		model.append("rename ate.EventType as eventtype;");
 		model.append("rename ate.WorkflowModelElement as activity; \n");
 		for (String string : rules) {
 			model.append(string);
