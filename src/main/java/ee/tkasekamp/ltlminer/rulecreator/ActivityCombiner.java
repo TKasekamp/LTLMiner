@@ -12,19 +12,8 @@ public class ActivityCombiner extends AbstractCombiner {
 	public ArrayList<String> combine(ArrayList<String> ruleTemplates,
 			ArrayList<String> replacements, ArrayList<String> ruleParameters,
 			HashMap<String, String[]> suitableReplacements) {
-		// Finding out what to replace with what
-		int k = ruleParameters.size();
-		// Combinations with repetitions
-		ArrayList<String[]> activityCombinations = createCombinations(
-				replacements, k);
-
-		// Filter the combinations with replacements if necessary
-		if (suitableReplacements != null)
-			activityCombinations = filterCombinations(activityCombinations,
-					ruleParameters, suitableReplacements);
-
-		ArrayList<HashMap<String, String>> whatToReplaceList = whatToReplaceWithWhat(
-				activityCombinations, ruleParameters);
+		ArrayList<HashMap<String, String>> whatToReplaceList = createReplacementList(
+				replacements, ruleParameters, suitableReplacements);
 
 		// Now the combining
 		ArrayList<String> finishedRules = new ArrayList<>();

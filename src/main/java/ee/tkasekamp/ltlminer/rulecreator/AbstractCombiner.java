@@ -18,7 +18,26 @@ public abstract class AbstractCombiner {
 	protected abstract String replaceInRule(String ruleTemplate,
 			HashMap<String, String> whatToReplace, Matcher m);
 
-	protected ArrayList<HashMap<String, String>> whatToReplaceWithWhat(
+	protected ArrayList<HashMap<String, String>> createReplacementList(
+			ArrayList<String> replacements, ArrayList<String> ruleParameters,
+			HashMap<String, String[]> suitableReplacements) {
+		// Finding out what to replace with what
+		int k = ruleParameters.size();
+		// Combinations with repetitions
+		ArrayList<String[]> activityCombinations = createCombinations(
+				replacements, k);
+
+		// Filter the combinations with replacements if necessary
+		if (suitableReplacements != null)
+			activityCombinations = filterCombinations(activityCombinations,
+					ruleParameters, suitableReplacements);
+
+		ArrayList<HashMap<String, String>> whatToReplaceList = whatToReplaceWithWhat(
+				activityCombinations, ruleParameters);
+		return whatToReplaceList;
+	}
+
+	private ArrayList<HashMap<String, String>> whatToReplaceWithWhat(
 			ArrayList<String[]> combinations, ArrayList<String> ruleParameters) {
 		ArrayList<HashMap<String, String>> whatToReplaceList = new ArrayList<HashMap<String, String>>();
 
@@ -32,7 +51,7 @@ public abstract class AbstractCombiner {
 		return whatToReplaceList;
 	}
 
-	protected ArrayList<String[]> createCombinations(
+	private ArrayList<String[]> createCombinations(
 			ArrayList<String> replacements, int k) {
 		ArrayList<String[]> combinations = new ArrayList<>();
 
@@ -47,7 +66,7 @@ public abstract class AbstractCombiner {
 	 * Magic happens here.
 	 */
 	@SuppressWarnings("rawtypes")
-	protected ArrayList<String[]> filterCombinations(
+	private ArrayList<String[]> filterCombinations(
 			ArrayList<String[]> combinations, ArrayList<String> ruleParameters,
 			HashMap<String, String[]> suitableReplacements) {
 		int position;
@@ -83,4 +102,5 @@ public abstract class AbstractCombiner {
 		}
 		return combinations;
 	}
+
 }

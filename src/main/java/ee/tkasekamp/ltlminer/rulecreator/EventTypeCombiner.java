@@ -13,17 +13,8 @@ public class EventTypeCombiner extends AbstractCombiner {
 	public ArrayList<String> combine(String ruleTemplate,
 			ArrayList<String> replacements, ArrayList<String> ruleParameters,
 			HashMap<String, String[]> suitableReplacements) {
-		// Finding out what to replace with what
-		int k = ruleParameters.size();
-		// Combinations with repetitions
-		ArrayList<String[]> eventCombinations = createCombinations(
-				replacements, k);
-		
-		if(suitableReplacements != null) 
-			eventCombinations =filterCombinations(eventCombinations, ruleParameters, suitableReplacements);
-		
-		ArrayList<HashMap<String, String>> whatToReplaceList = whatToReplaceWithWhat(
-				eventCombinations, ruleParameters);
+		ArrayList<HashMap<String, String>> whatToReplaceList = createReplacementList(
+				replacements, ruleParameters, suitableReplacements);
 
 		// Now the combining
 		ArrayList<String> finishedRules = new ArrayList<>();
