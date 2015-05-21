@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author Tonis
  *
  */
-public class GenericCombiner {
+public class CombineUtil {
 	/**
 	 * Generates all possible combinations from arr with lenght k. Allows
 	 * repetiton in the finshed arrays.

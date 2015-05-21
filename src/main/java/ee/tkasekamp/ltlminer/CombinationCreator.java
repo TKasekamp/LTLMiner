@@ -17,6 +17,8 @@ public class CombinationCreator {
 
 	private HashMap<String, Integer> positions;
 	private HashMap<String, String[]> eventReplacement;
+	
+	private HashMap<String, String> [] eventtypes;
 
 	/**
 	 * Default constructor. Do not Create combinations with repetitions.
@@ -69,13 +71,14 @@ public class CombinationCreator {
 //		System.out.println("There are rules:" + rules.size());
 		// Lifecycle stuff
 		ArrayList<String[]> combos2 = new ArrayList<>();
-		int k2 = numberOfLifecycles(rule);
+//		int k2 = numberOfLifecycles(rule);
 //		System.out.println(k2);
 		String[] input2 = lifecycles.toArray(new String[lifecycles.size()]);
-		String[] branch2 = new String[k2];
+		String[] branch2 = new String[k];
 
-		combine(input2, k2, branch2, 0, combos2);
+		combine(input2, k, branch2, 0, combos2);
 
+		
 		
 //		System.out.println("Number of combos: " + combos2.size());
 		ArrayList<String> rules2 = new ArrayList<>();

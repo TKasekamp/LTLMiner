@@ -53,8 +53,8 @@ public class EventTypeCombiner {
 		String[] input = eventTypes.toArray(new String[eventTypes.size()]);
 		String[] branch = new String[k];
 
-		GenericCombiner.combineNoRepetitions(input, k, branch, 0,
-				eventCombinations);
+		CombineUtil
+				.combineNoRepetitions(input, k, branch, 0, eventCombinations);
 		return eventCombinations;
 	}
 
