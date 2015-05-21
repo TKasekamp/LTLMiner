@@ -33,9 +33,21 @@ public class RuleCreator {
 		return finishedRules;
 	}
 
+	public ArrayList<String> generateRules(ArrayList<String> ruleTemplates,
+			ArrayList<String> activities) {
+		return generateRules(ruleTemplates, activities, null);
+	}
+
 	public ArrayList<String> generateRules(String ruleTemplate,
 			ArrayList<String> activities) {
 		return generateRules(ruleTemplate, activities, null, null);
+	}
+
+	public ArrayList<String> generateRules(String ruleTemplate,
+			ArrayList<String> activities, ArrayList<String> eventTypes) {
+		ArrayList<String> ruleTemplates = new ArrayList<>();
+		ruleTemplates.add(ruleTemplate);
+		return generateRules(ruleTemplates, activities, eventTypes);
 	}
 
 	public ArrayList<String> generateRules(String ruleTemplate,

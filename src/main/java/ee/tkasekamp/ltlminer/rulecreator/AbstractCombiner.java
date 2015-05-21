@@ -75,11 +75,12 @@ public abstract class AbstractCombiner {
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
 
-			try {
-				position = ruleParameters.indexOf(pair.getKey());
-			} catch (NullPointerException e) {
+			position = ruleParameters.indexOf(pair.getKey());
+
+			// Will happen if the input replacement parameter is misspelled
+			if (position == -1)
 				continue;
-			}
+
 			suitable = (String[]) pair.getValue();
 
 			Iterator<String[]> it2 = combinations.iterator();
