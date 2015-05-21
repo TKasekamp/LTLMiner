@@ -5,60 +5,44 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class EventTypeCombiner {
-	private static Pattern leftActivity = Pattern
+public class EventTypeCombiner extends AbstractCombiner {
+	private Pattern leftActivity = Pattern
 			.compile("(activity)(\\s)*(==|!=)(\\s)*(\\w+)");
 
-	public static ArrayList<String> combineEventTypes(String ruleTemplate,
-			ArrayList<String> eventTypes, ArrayList<String> parameters) {
-
+	@Override
+	public ArrayList<String> combine(String ruleTemplate,
+			ArrayList<String> replacements, ArrayList<String> ruleParameters,
+			HashMap<String, String[]> suitableReplacements) {
 		// Finding out what to replace with what
-		int k = parameters.size();
+		int k = ruleParameters.size();
 		// Combinations with repetitions
-		ArrayList<String[]> eventCombinations = createCombinations(eventTypes,
-				k);
-
+		ArrayList<String[]> eventCombinations = createCombinations(
+				replacements, k);
+		
+		if(suitableReplacements != null) 
+			eventCombinations =filterCombinations(eventCombinations, ruleParameters, suitableReplacements);
+		
 		ArrayList<HashMap<String, String>> whatToReplaceList = whatToReplaceWithWhat(
-				eventCombinations, parameters);
+				eventCombinations, ruleParameters);
 
 		// Now the combining
 		ArrayList<String> finishedRules = new ArrayList<>();
 		Matcher m = leftActivity.matcher(ruleTemplate);
 		for (HashMap<String, String> whatToReplace : whatToReplaceList) {
-			finishedRules
-					.add(replaceEventTypes(ruleTemplate, whatToReplace, m));
+			finishedRules.add(replaceInRule(ruleTemplate, whatToReplace, m));
 		}
 
 		return finishedRules;
 	}
 
-	private static ArrayList<HashMap<String, String>> whatToReplaceWithWhat(
-			ArrayList<String[]> eventCombinations, ArrayList<String> parameters) {
-		ArrayList<HashMap<String, String>> whatToReplaceList = new ArrayList<HashMap<String, String>>();
-
-		for (String[] combo : eventCombinations) {
-			HashMap<String, String> a = new HashMap<String, String>();
-			for (int i = 0; i < combo.length; i++) {
-				a.put(parameters.get(i), combo[i]);
-			}
-			whatToReplaceList.add(a);
-		}
-		return whatToReplaceList;
+	@Override
+	public ArrayList<String> combine(String ruleTemplate,
+			ArrayList<String> replacements, ArrayList<String> ruleParameters) {
+		return combine(ruleTemplate, replacements, ruleParameters, null);
 	}
 
-	private static ArrayList<String[]> createCombinations(
-			ArrayList<String> eventTypes, int k) {
-		ArrayList<String[]> eventCombinations = new ArrayList<>();
-
-		String[] input = eventTypes.toArray(new String[eventTypes.size()]);
-		String[] branch = new String[k];
-
-		CombineUtil
-				.combineNoRepetitions(input, k, branch, 0, eventCombinations);
-		return eventCombinations;
-	}
-
-	private static String replaceEventTypes(String ruleTemplate,
+	@Override
+	protected String replaceInRule(String ruleTemplate,
 			HashMap<String, String> whatToReplace, Matcher m) {
 		m.reset(ruleTemplate);
 		StringBuffer sb = new StringBuffer(ruleTemplate.length());

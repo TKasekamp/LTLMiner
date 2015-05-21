@@ -5,9 +5,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class EventTypeTest {
+	private EventTypeCombiner evCombiner;
+
+	@Before
+	public void setup() {
+		evCombiner = new EventTypeCombiner();
+	}
 
 	@Test
 	public void testRule1() {
@@ -17,15 +24,15 @@ public class EventTypeTest {
 		ArrayList<String> eventTypes = new ArrayList<>();
 		eventTypes.add("complete");
 
-		ArrayList<String> rules = EventTypeCombiner.combineEventTypes(rule1(),
-				eventTypes, parameters);
+		ArrayList<String> rules = evCombiner.combine(rule1(), eventTypes,
+				parameters);
 
 		assertEquals(0, rules.size());
 
 		// Add another eventType
 		eventTypes.add("started");
-		ArrayList<String> rules2 = EventTypeCombiner.combineEventTypes(rule1(),
-				eventTypes, parameters);
+		ArrayList<String> rules2 = evCombiner.combine(rule1(), eventTypes,
+				parameters);
 		assertEquals(2, rules2.size());
 		assertTrue(rules2.get(0).contains(
 				"activity == A /\\ eventtype == \"complete\""));
@@ -46,15 +53,15 @@ public class EventTypeTest {
 		ArrayList<String> eventTypes = new ArrayList<>();
 		eventTypes.add("complete");
 
-		ArrayList<String> rules = EventTypeCombiner.combineEventTypes(rule2(),
-				eventTypes, parameters);
+		ArrayList<String> rules = evCombiner.combine(rule2(), eventTypes,
+				parameters);
 
 		assertEquals(0, rules.size());
 
 		// Add another eventType
 		eventTypes.add("started");
-		ArrayList<String> rules2 = EventTypeCombiner.combineEventTypes(rule2(),
-				eventTypes, parameters);
+		ArrayList<String> rules2 = evCombiner.combine(rule2(), eventTypes,
+				parameters);
 		assertEquals(2, rules2.size());
 		assertTrue(rules2.get(0).contains(
 				"activity == A /\\ eventtype == \"complete\""));
@@ -69,8 +76,8 @@ public class EventTypeTest {
 		// Add another eventType
 		eventTypes.add("waiting");
 		eventTypes.add("assigned");
-		ArrayList<String> rules3 = EventTypeCombiner.combineEventTypes(rule2(),
-				eventTypes, parameters);
+		ArrayList<String> rules3 = evCombiner.combine(rule2(), eventTypes,
+				parameters);
 		assertEquals(12, rules3.size());
 	}
 
@@ -83,15 +90,15 @@ public class EventTypeTest {
 		ArrayList<String> eventTypes = new ArrayList<>();
 		eventTypes.add("complete");
 
-		ArrayList<String> rules = EventTypeCombiner.combineEventTypes(rule3(),
-				eventTypes, parameters);
+		ArrayList<String> rules = evCombiner.combine(rule3(), eventTypes,
+				parameters);
 
 		assertEquals(0, rules.size());
 
 		// Add another eventType
 		eventTypes.add("started");
-		ArrayList<String> rules2 = EventTypeCombiner.combineEventTypes(rule3(),
-				eventTypes, parameters);
+		ArrayList<String> rules2 = evCombiner.combine(rule3(), eventTypes,
+				parameters);
 		assertEquals(2, rules2.size());
 		assertTrue(rules2.get(0).contains(
 				"activity == A /\\ eventtype == \"complete\""));
@@ -106,8 +113,8 @@ public class EventTypeTest {
 		// Add another eventType
 		eventTypes.add("waiting");
 		eventTypes.add("assigned");
-		ArrayList<String> rules3 = EventTypeCombiner.combineEventTypes(rule3(),
-				eventTypes, parameters);
+		ArrayList<String> rules3 = evCombiner.combine(rule3(), eventTypes,
+				parameters);
 		assertEquals(36, rules3.size());
 	}
 
@@ -118,15 +125,15 @@ public class EventTypeTest {
 		ArrayList<String> eventTypes = new ArrayList<>();
 		eventTypes.add("complete");
 
-		ArrayList<String> rules = EventTypeCombiner.combineEventTypes(rule4(),
-				eventTypes, parameters);
+		ArrayList<String> rules = evCombiner.combine(rule4(), eventTypes,
+				parameters);
 
 		assertEquals(1, rules.size());
 
 		// Add another eventType
 		eventTypes.add("started");
-		ArrayList<String> rules2 = EventTypeCombiner.combineEventTypes(rule4(),
-				eventTypes, parameters);
+		ArrayList<String> rules2 = evCombiner.combine(rule4(), eventTypes,
+				parameters);
 		assertEquals(2, rules2.size());
 		assertTrue(rules2.get(0).contains(
 				"activity == A /\\ eventtype == \"complete\""));
@@ -137,8 +144,8 @@ public class EventTypeTest {
 		// Add another eventType
 		eventTypes.add("waiting");
 		eventTypes.add("assigned");
-		ArrayList<String> rules3 = EventTypeCombiner.combineEventTypes(rule4(),
-				eventTypes, parameters);
+		ArrayList<String> rules3 = evCombiner.combine(rule4(), eventTypes,
+				parameters);
 
 		assertEquals(4, rules3.size());
 	}

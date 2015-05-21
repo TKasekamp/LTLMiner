@@ -6,10 +6,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class ActivityCombinerTest {
-
+	private ActivityCombiner acCombiner;
+	
+	@Before
+	public void setup() {
+		acCombiner = new ActivityCombiner();
+	}
 	@Test
 	public void combineActivities() {
 		String rule = "formula two( A: activity, B: activity) = {} \n"
@@ -19,7 +25,7 @@ public class ActivityCombinerTest {
 		ArrayList<String> activities = new ArrayList<>(Arrays.asList("A", "B",
 				"C", "D", "E"));
 
-		ArrayList<String> rules = ActivityCombiner.combineActivity(rule,
+		ArrayList<String> rules = acCombiner.combine(rule,
 				activities, parameters);
 
 		assertEquals("Number of combinations", 20, rules.size());
@@ -39,7 +45,7 @@ public class ActivityCombinerTest {
 		ArrayList<String> ruleTemplates = new ArrayList<>(Arrays.asList(rule,
 				rule2));
 
-		ArrayList<String> rules = ActivityCombiner.combineActivities(
+		ArrayList<String> rules = acCombiner.combine(
 				ruleTemplates, activities, parameters);
 
 		assertEquals("Number of combinations", 40, rules.size());
@@ -58,7 +64,7 @@ public class ActivityCombinerTest {
 		replacements.put("A", new String[] { "C", "D", "A" });
 		replacements.put("B", new String[] { "A", "B" });
 
-		ArrayList<String> rules = ActivityCombiner.combineActivity(rule,
+		ArrayList<String> rules = acCombiner.combine(rule,
 				activities, parameters, replacements);
 		assertEquals("Number of combinations", 5, rules.size());
 
