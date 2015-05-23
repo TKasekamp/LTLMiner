@@ -81,13 +81,13 @@ public class LogFilter {
 		a.addAll(answ);
 		return a;
 	}
-	
 
-	public ArrayList<String> getLifecycles(XLog log) {
+	public ArrayList<String> getEventTypes(XLog log) {
 		HashSet<String> answ = new HashSet<String>();
 		for (XTrace trace : log) {
 			for (XEvent event : trace) {
-				String eventType = XLifecycleExtension.instance().extractTransition(event);
+				String eventType = XLifecycleExtension.instance()
+						.extractTransition(event);
 				answ.add(eventType);
 			}
 		}

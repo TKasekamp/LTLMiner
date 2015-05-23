@@ -21,20 +21,8 @@ public class LTLMinerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		miner = new LTLMiner(true);
+		miner = new LTLMiner();
 		log = XLogReader.openLog("src/test/resources/exercise1.xes");
-	}
-
-	@Test
-	public void analyseRule() {
-		String rule = "formula always_when_A_then_eventually_E( A: activity , E: activity ) :=  {}\n"
-				+ "    []( ( activity == A  -> <>( activity==E  ) ) ); ";
-		Object[] objList = miner.analyseRule(log, rule, new ArrayList<String>(
-				Arrays.asList("A", "B", "C", "D", "E")));
-		CheckResultObject output = (CheckResultObject) objList[0];
-
-		assertEquals("There are a total of 25 combinations from the log", 25,
-				output.getRules().length);
 	}
 
 	@Test

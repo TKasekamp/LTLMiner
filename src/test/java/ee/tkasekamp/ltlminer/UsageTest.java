@@ -1,6 +1,7 @@
 package ee.tkasekamp.ltlminer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.deckfour.xes.model.XLog;
 import org.junit.Test;
@@ -22,23 +23,12 @@ public class UsageTest {
 				+ "!( (<>(activity == A) /\\ <>(activity == B) ));";
 		LTLMiner miner = new LTLMiner(); 
 		XLog log = XLogReader.openLog("src/test/resources/orderGoodsLog.xes");
-		ArrayList<RuleModel> result = miner.mine(log, formula, 0.0);
+		ArrayList<RuleModel> result = miner.mine(log, new ArrayList<>(Arrays.asList(formula)), 0.0);
 
 		for (RuleModel rule : result) {
 			System.out.println(rule.getCoverage() + " " + rule.getLtlRule());
 		}
 	}
 	
-	@Test
-	public void t2() throws Exception {
-		String formula = "formula notCoExistence( A: activity , B: activity ) :=  { }"
-				+ "!( (<>(activity == A) /\\ <>(activity == B) ));";
-		LTLMiner miner = new LTLMiner(); 
-		XLog log = XLogReader.openLog("src/test/resources/orderGoodsLog.xes");
-		ArrayList<RuleModel> result = miner.mineAllLifecycles(log, formula, 0.0);
 
-		for (RuleModel rule : result) {
-			System.out.println(rule.getCoverage() + " " + rule.getLtlRule());
-		}
-	}
 }

@@ -120,7 +120,7 @@ public class RuleCreator {
 		return rules;
 	}
 
-	private String ruleName(int i) {
+	public String ruleName(int i) {
 		return "rule_" + i;
 	}
 
