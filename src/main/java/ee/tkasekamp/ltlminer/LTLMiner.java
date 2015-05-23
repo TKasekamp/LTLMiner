@@ -1,7 +1,7 @@
 package ee.tkasekamp.ltlminer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.deckfour.xes.model.XLog;
@@ -59,6 +59,11 @@ public class LTLMiner {
 		Object[] objList = checkRules(log, rules);
 		return filter(objList, threshold);
 	}
+	
+	public ArrayList<RuleModel> mine(XLog log, Properties properties) {
+		// TODO
+		return null;
+	}
 
 	private Object[] checkRules(XLog log, ArrayList<String> rules) {
 		String modelString = LTLFileCreator.createLTLModel(rules);
@@ -67,145 +72,6 @@ public class LTLMiner {
 		model.setFile(modelString);
 		return checker.analyse(log, model);
 	}
-
-	// public ArrayList<RuleModel> mine(XLog log, String rule, double threshold)
-	// {
-	// ArrayList<String> ac = logFilter.getFrequent(log);
-	// Object[] objList = analyseRule(log, rule, ac);
-	// return filter(objList, threshold);
-	// }
-	//
-	// public ArrayList<RuleModel> mine(XLog log, String[] rules, double
-	// threshold) {
-	// ArrayList<String> ac = logFilter.getFrequent(log);
-	// Object[] objList = analyseRules(log, rules, ac);
-	// return filter(objList, threshold);
-	// }
-	//
-	// public ArrayList<RuleModel> mine(XLog log, String rule, double threshold,
-	// int howManyEvents) {
-	// ArrayList<String> ac = logFilter.getFrequent(log, howManyEvents);
-	// Object[] objList = analyseRule(log, rule, ac);
-	// return filter(objList, threshold);
-	// }
-	//
-	// public ArrayList<RuleModel> mine(XLog log, String[] rules,
-	// double threshold, int howManyEvents) {
-	// ArrayList<String> ac = logFilter.getFrequent(log, howManyEvents);
-	// Object[] objList = analyseRules(log, rules, ac);
-	// return filter(objList, threshold);
-	// }
-	//
-	// public ArrayList<RuleModel> mineAll(XLog log, String rule, double
-	// threshold) {
-	//
-	// ArrayList<String> ac = logFilter.getAllEvents(log);
-	// Object[] objList = analyseRule(log, rule, ac);
-	// return filter(objList, threshold);
-	// }
-	//
-	// public ArrayList<RuleModel> mineAll(XLog log, String[] rules,
-	// double threshold) {
-	//
-	// ArrayList<String> ac = logFilter.getAllEvents(log);
-	// Object[] objList = analyseRules(log, rules, ac);
-	// return filter(objList, threshold);
-	// }
-	//
-	// public ArrayList<RuleModel> mineAllLifecycles(XLog log, String rule,
-	// double threshold) {
-	//
-	// ArrayList<String> ac = logFilter.getAllEvents(log);
-	// ArrayList<String> li = logFilter.getLifecycles(log);
-	// // System.out.println(li.size());
-	// Object[] objList = analyseRule(log, rule, ac, li);
-	// return filter(objList, threshold);
-	// }
-	// public ArrayList<RuleModel> mine(XLog log, String rule, double threshold,
-	// HashMap<String, String[]> eventReplacement) {
-	//
-	// ArrayList<String> ac = logFilter.getAllEvents(log);
-	// Object[] objList = analyseRule(log, rule, ac, eventReplacement);
-	// return filter(objList, threshold);
-	// }
-	//
-	// public ArrayList<RuleModel> mine(XLog log, String[] rules,
-	// double threshold, HashMap<String, String[]> eventReplacement) {
-	//
-	// ArrayList<String> ac = logFilter.getAllEvents(log);
-	// Object[] objList = analyseRules(log, rules, ac, eventReplacement);
-	// return filter(objList, threshold);
-	// }
-	//
-	// /**
-	// * This is the first part of the miner. It creates all possible
-	// combinations
-	// * of rules using the input rule as a template. It then uses the
-	// * {@link LTLChecker} to create an output.
-	// *
-	// * @param log
-	// * {@link XLog}
-	// * @param rule
-	// * Valid LTL formula with no default arguments.
-	// * @return Object [] form {@link LTLChecker}
-	// */
-	// public Object[] analyseRule(XLog log, String rule,
-	// ArrayList<String> activities) {
-	// String[] rules = creator.createRule(rule, activities);
-	// String modelString = createLTLModel(rules);
-	//
-	// addRulesToChecker(rules);
-	// LTLModel model = new LTLModel();
-	// model.setFile(modelString);
-	// return checker.analyse(log, model);
-	// }
-	//
-	// public Object[] analyseRule(XLog log, String rule,
-	// ArrayList<String> activities, ArrayList<String> lifecycles) {
-	// String[] rules = creator.createRule(rule, activities,lifecycles);
-	// String modelString = createLTLModel(rules);
-	//
-	// addRulesToChecker(rules);
-	// LTLModel model = new LTLModel();
-	// model.setFile(modelString);
-	// return checker.analyse(log, model);
-	// }
-	//
-	// public Object[] analyseRule(XLog log, String rule,
-	// ArrayList<String> activities,
-	// HashMap<String, String[]> eventReplacement) {
-	// String[] rules = creator.createRule(rule, activities, eventReplacement);
-	// String modelString = createLTLModel(rules);
-	//
-	// addRulesToChecker(rules);
-	// LTLModel model = new LTLModel();
-	// model.setFile(modelString);
-	// return checker.analyse(log, model);
-	// }
-	//
-	// public Object[] analyseRules(XLog log, String[] ltlFormulas,
-	// ArrayList<String> activities) {
-	// String[] rules = creator.createRules(ltlFormulas, activities);
-	// String modelString = createLTLModel(rules);
-	//
-	// addRulesToChecker(rules);
-	// LTLModel model = new LTLModel();
-	// model.setFile(modelString);
-	// return checker.analyse(log, model);
-	// }
-	//
-	// public Object[] analyseRules(XLog log, String[] ltlFormulas,
-	// ArrayList<String> activities,
-	// HashMap<String, String[]> eventReplacement) {
-	// String[] rules = creator.createRules(ltlFormulas, activities,
-	// eventReplacement);
-	// String modelString = createLTLModel(rules);
-	//
-	// addRulesToChecker(rules);
-	// LTLModel model = new LTLModel();
-	// model.setFile(modelString);
-	// return checker.analyse(log, model);
-	// }
 
 	private void addRulesToChecker(ArrayList<String> rules) {
 		Vector<String> selectedRules = new Vector<>();
