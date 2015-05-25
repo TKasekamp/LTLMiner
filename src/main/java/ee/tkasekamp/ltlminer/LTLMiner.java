@@ -32,6 +32,7 @@ public class LTLMiner {
 	private RuleCreator ruleCreator;
 	private LTLChecker checker;
 	private LogFilter logFilter;
+	private double minSupport = 0.0;
 
 	public LTLMiner() {
 		ruleCreator = new RuleCreator();
@@ -40,29 +41,50 @@ public class LTLMiner {
 	}
 
 	public ArrayList<RuleModel> mine(XLog log, ArrayList<String> ruleTemplates,
-			double threshold) {
+			double minSupport) {
+		this.minSupport = minSupport;
 		ArrayList<String> events = logFilter.getAllEvents(log);
 		ArrayList<String> rules = ruleCreator.generateRules(ruleTemplates,
 				events);
 
 		Object[] objList = checkRules(log, rules);
-		return filter(objList, threshold);
+		return filter(objList);
 	}
 
 	public ArrayList<RuleModel> mineWithEventTypes(XLog log,
-			ArrayList<String> ruleTemplates, double threshold) {
+			ArrayList<String> ruleTemplates, double minSupport) {
+		this.minSupport = minSupport;
 		ArrayList<String> events = logFilter.getAllEvents(log);
 		ArrayList<String> eventTypes = logFilter.getEventTypes(log);
 		ArrayList<String> rules = ruleCreator.generateRules(ruleTemplates,
 				events, eventTypes);
 
 		Object[] objList = checkRules(log, rules);
-		return filter(objList, threshold);
+		return filter(objList);
 	}
-	
+
 	public ArrayList<RuleModel> mine(XLog log, Properties properties) {
-		// TODO
-		return null;
+		this.minSupport = Double.parseDouble(properties
+				.getProperty("minSupport"));
+		String queries = properties.getProperty("queries");
+		ArrayList<String> ruleTemplates = RuleTemplateCreator
+				.createTemplates(queries);
+
+		boolean considerEventTypes = Boolean.parseBoolean(properties
+				.getProperty("considerEventTypes"));
+
+		ArrayList<String> events = logFilter.getAllEvents(log);
+		ArrayList<String> rules;
+
+		if (considerEventTypes) {
+			ArrayList<String> eventTypes = logFilter.getEventTypes(log);
+			rules = ruleCreator
+					.generateRules(ruleTemplates, events, eventTypes);
+		} else {
+			rules = ruleCreator.generateRules(ruleTemplates, events);
+		}
+		Object[] objList = checkRules(log, rules);
+		return filter(objList);
 	}
 
 	private Object[] checkRules(XLog log, ArrayList<String> rules) {
@@ -86,22 +108,19 @@ public class LTLMiner {
 
 	/**
 	 * Gets {@link RuleModel} from {@link CheckResultObject} and returns the
-	 * ones with coverage greater or equal to the threshold.
+	 * ones with coverage greater or equal to the minSupport.
 	 * 
 	 * @param objList
 	 *            {@link Object} array containing {@link CheckResultObject}
-	 * @param threshold
-	 *            double
 	 * @return
 	 */
-	private static ArrayList<RuleModel> filter(Object[] objList,
-			double threshold) {
+	private ArrayList<RuleModel> filter(Object[] objList) {
 		CheckResultObject output = (CheckResultObject) objList[0];
 		ArrayList<RuleModel> result = new ArrayList<>();
 
 		for (RuleModel r : output.getRules()) {
 			// TODO double comparison isn't good. Do with delta
-			if (r.getCoverage() >= threshold) {
+			if (r.getCoverage() >= minSupport) {
 				result.add(r);
 			}
 
