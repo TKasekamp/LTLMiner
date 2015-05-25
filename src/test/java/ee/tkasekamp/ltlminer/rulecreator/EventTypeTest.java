@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -79,6 +80,19 @@ public class EventTypeTest {
 		ArrayList<String> rules3 = evCombiner.combine(rule2(), eventTypes,
 				parameters);
 		assertEquals(12, rules3.size());
+	}
+	
+	@Test
+	public void testRule2RealLog() {
+		ArrayList<String> parameters = new ArrayList<>();
+		parameters.add("A");
+		parameters.add("B");
+		ArrayList<String> ev = new ArrayList<>(Arrays.asList("Awaiting Assignment","Assigned","Wait - Implementation","In Call","In Progress","Wait - User","Cancelled","Unmatched","Closed","Resolved","Wait","Wait - Customer","Wait - Vendor"));
+
+		ArrayList<String> rules = evCombiner.combine(rule2(), ev,
+				parameters);
+		assertEquals(156, rules.size());
+
 	}
 
 	@Test

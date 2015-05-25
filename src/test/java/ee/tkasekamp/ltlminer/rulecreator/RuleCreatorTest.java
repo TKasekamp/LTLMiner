@@ -94,6 +94,19 @@ public class RuleCreatorTest {
 	}
 
 	@Test
+	public void generateRule3RealLog() {
+		ArrayList<String> ac = new ArrayList<>(Arrays.asList("Unmatched",
+				"Completed", "Queued", "Accepted"));
+		ArrayList<String> ev = new ArrayList<>(Arrays.asList(
+				"Awaiting Assignment", "Assigned", "Wait - Implementation",
+				"In Call", "In Progress", "Wait - User", "Cancelled",
+				"Unmatched", "Closed", "Resolved", "Wait", "Wait - Customer",
+				"Wait - Vendor"));
+		ArrayList<String> rules = ruleCreator.generateRules(rule3(), ac, ev);
+		assertEquals("Number of combinations", 1872, rules.size());
+	}
+
+	@Test
 	public void generateWithReplacementRule1() {
 		HashMap<String, String[]> replacements = new HashMap<>();
 		replacements.put("A", new String[] { "C", "D", "A" });
@@ -119,7 +132,7 @@ public class RuleCreatorTest {
 	@Test
 	public void generateWithBadReplacementRule1() {
 		HashMap<String, String[]> replacements = new HashMap<>();
-		replacements.put("A", new String[] { "C", "D", "A" , "stupidThing"});
+		replacements.put("A", new String[] { "C", "D", "A", "stupidThing" });
 		replacements.put("B", new String[] { "B" });
 
 		ArrayList<String> rules = ruleCreator.generateRules(rule1(),
