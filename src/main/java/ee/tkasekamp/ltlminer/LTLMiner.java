@@ -1,6 +1,7 @@
 package ee.tkasekamp.ltlminer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -40,35 +41,31 @@ public class LTLMiner {
 		logFilter = new LogFilter();
 	}
 
-	public ArrayList<RuleModel> mine(XLog log, ArrayList<String> ruleTemplates,
-			double minSupport) {
+	public ArrayList<RuleModel> mine(XLog log, ArrayList<String> ruleTemplates, double minSupport) {
 		this.minSupport = minSupport;
 		ArrayList<String> events = logFilter.getAllEvents(log);
-		ArrayList<String> rules = ruleCreator.generateRules(ruleTemplates,
-				events);
+		ArrayList<String> rules = ruleCreator.generateRules(ruleTemplates, events);
 
 		Object[] objList = checkRules(log, rules);
 		return filter(objList);
 	}
 
-	public ArrayList<RuleModel> mineWithEventTypes(XLog log,
-			ArrayList<String> ruleTemplates, double minSupport) {
+	public ArrayList<RuleModel> mineWithEventTypes(XLog log, ArrayList<String> ruleTemplates,
+			double minSupport) {
 		this.minSupport = minSupport;
 		ArrayList<String> events = logFilter.getAllEvents(log);
 		ArrayList<String> eventTypes = logFilter.getEventTypes(log);
-		ArrayList<String> rules = ruleCreator.generateRules(ruleTemplates,
-				events, eventTypes);
+		ArrayList<String> rules = ruleCreator.generateRules(ruleTemplates, events, eventTypes);
 
 		Object[] objList = checkRules(log, rules);
 		return filter(objList);
 	}
 
 	public ArrayList<RuleModel> mine(XLog log, Properties properties) {
-		this.minSupport = Double.parseDouble(properties
-				.getProperty("minSupport"));
+		this.minSupport = Double.parseDouble(properties.getProperty("minSupport"));
 		String queries = properties.getProperty("queries");
-		ArrayList<String> ruleTemplates = RuleTemplateCreator
-				.createTemplates(queries);
+		ArrayList<HashMap<String, String[]>> replacements = ReplacementFinder.find(queries);
+		ArrayList<String> ruleTemplates = RuleTemplateCreator.createTemplates(queries);
 
 		boolean considerEventTypes = Boolean.parseBoolean(properties
 				.getProperty("considerEventTypes"));
@@ -78,10 +75,9 @@ public class LTLMiner {
 
 		if (considerEventTypes) {
 			ArrayList<String> eventTypes = logFilter.getEventTypes(log);
-			rules = ruleCreator
-					.generateRules(ruleTemplates, events, eventTypes);
+			rules = ruleCreator.generateRules(ruleTemplates, events, eventTypes, replacements);
 		} else {
-			rules = ruleCreator.generateRules(ruleTemplates, events);
+			rules = ruleCreator.generateRules(ruleTemplates, events, null, replacements);
 		}
 		Object[] objList = checkRules(log, rules);
 		return filter(objList);

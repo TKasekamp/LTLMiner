@@ -11,7 +11,7 @@ public class RuleTemplateCreator {
 	public static ArrayList<String> createTemplates(String queries) {
 		ArrayList<String> templates = new ArrayList<>();
 
-		String[] s = queries.split(",");
+		String[] s = queries.split(";");
 		for (String string : s) {
 			templates.add(bla(string));
 		}
@@ -20,7 +20,7 @@ public class RuleTemplateCreator {
 
 	private static String bla(String thing) {
 		thing = thing.replaceAll("\"", "");
-
+		thing = removeSpecificParameters(thing);
 		HashSet<String> a = getParameters(thing);
 
 		thing = doSomething(thing);
@@ -71,5 +71,9 @@ public class RuleTemplateCreator {
 		}
 		m.appendTail(sb);
 		return sb.toString();
+	}
+
+	private static String removeSpecificParameters(String query) {
+		return query.replaceAll("\\{(.*?)\\}", "");
 	}
 }
