@@ -63,6 +63,30 @@ public class RuleCreator {
 		return finishedRules;
 	}
 
+
+	/**
+	 * If eventTypes is not used, just put null. The number of items in ruleTemplates and suitableActivityReplacements must be equal. 
+	 * @param ruleTemplates
+	 * @param activities
+	 * @param eventTypes
+	 * @param suitableActivityReplacements ArrayList of HashMaps. Yeah.
+	 * @return
+	 */
+	public ArrayList<String> generateRules(ArrayList<String> ruleTemplates,
+			ArrayList<String> activities, ArrayList<String> eventTypes,
+			ArrayList<HashMap<String, String[]>> suitableActivityReplacements) {
+		ArrayList<String> finishedRules = new ArrayList<>();
+
+		for (int i = 0; i < ruleTemplates.size(); i++) {
+			finishedRules.addAll(createRule(ruleTemplates.get(i), activities,
+					eventTypes, suitableActivityReplacements.get(i)));
+		}
+
+		finishedRules = renameRules(finishedRules);
+
+		return finishedRules;
+	}
+
 	public ArrayList<String> generateRules(String ruleTemplate,
 			ArrayList<String> activities,
 			HashMap<String, String[]> suitableActivityReplacements) {
